@@ -1,0 +1,78 @@
+body{
+    background-color: #333333;
+    color: #aaaaaa;
+}
+
+.closeButton{
+    padding: 10px 20px;
+    border: solid 1px #aaaaaa;
+}
+
+#side-wrapper{
+    height: 91%;
+    position: absolute;
+    top: 60px;
+    right: 5px;
+    width: 13%;
+    font-size: 70%;
+    border: solid 1px #aaaaaa;
+    overflow: hidden;
+}
+
+.title{
+    margin: 3px 0;
+    text-align: center;
+    font-weight: bold;
+    border-bottom: solid 2px #aaaaaa;
+}
+
+#orderBook-table{
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.orderBooks{
+    border-bottom: solid 1px #aaaaaa;
+}
+
+.mid{
+    color: lightgreen;
+    font-size: xx-small;
+}
+
+#spread{
+    text-align: right;
+}
+
+.bidQty{
+    text-align: right;
+}
+
+.askQty{
+    text-align: right;
+}
+
+#canvas{
+    position: absolute;
+    top: 60px;
+    left: 5px;
+    width: 85%;
+    border: 1px solid #aaaaaa;
+    height: 91%;
+}
+
+#historyTable{
+    width: 100%;
+}
+
+.tradedTime{
+    text-align: right;
+}
+
+.bids{
+    color: lightskyblue;
+}
+
+.asks{
+    color: salmon;
+}

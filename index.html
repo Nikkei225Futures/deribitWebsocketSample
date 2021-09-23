@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>deribit virtual trader</title>
+        <link rel="stylesheet" href="./css/index.css">
+    </head>
+    <body>
+        <canvas id = "canvas"></canvas>
+        <div class = "closeButton" onclick="closeConnection()">
+            Close API Connection
+        </div>
+
+        <div id = "side-wrapper">
+            <div id = "orderBook-wrapper">
+                <p class = "title">OrderBook</p>
+                <table id = orderBook-table>
+                    <tr class = "orderBooks asks"><td class = "askPrice"></td><td class = "askQty"></td></tr>
+                    <tr class = "orderBooks asks"><td class = "askPrice"></td><td class = "askQty"></td></tr>
+                    <tr class = "orderBooks asks"><td class = "askPrice"></td><td class = "askQty"></td></tr>
+                    <tr class = "orderBooks asks"><td class = "askPrice"></td><td class = "askQty"></td></tr>
+                    <tr class = "orderBooks asks"><td class = "askPrice"></td><td class = "askQty"></td></tr>
+                    <tr class = "orderBooks asks"><td class = "askPrice"></td><td class = "askQty"></td></tr>
+                    <tr class = "orderBooks asks"><td class = "askPrice"></td><td class = "askQty"></td></tr>
+                    <tr class = "orderBooks asks"><td class = "askPrice"></td><td class = "askQty"></td></tr>
+                    <tr class = "orderBooks asks"><td class = "askPrice"></td><td class = "askQty"></td></tr>
+                    <tr class = "orderBooks asks" id = "bestAsk"><td class = "askPrice" id = "bestAskPrice"></td><td class = "askQty" id = bestAskQty></td></tr>
+                    <tr class = "orderBooks mid"><td>spread: </td><td id = "spread"></td></tr>
+                    <tr class = "orderBooks bids" id = "bestBid"><td class = "bidPrice" id = "bestBidPrice"></td><td class = "bidQty" id = bestBidQty></td></tr>
+                    <tr class = "orderBooks bids"><td class = "bidPrice"></td><td class = "bidQty"></td></tr>
+                    <tr class = "orderBooks bids"><td class = "bidPrice"></td><td class = "bidQty"></td></tr>
+                    <tr class = "orderBooks bids"><td class = "bidPrice"></td><td class = "bidQty"></td></tr>
+                    <tr class = "orderBooks bids"><td class = "bidPrice"></td><td class = "bidQty"></td></tr>
+                    <tr class = "orderBooks bids"><td class = "bidPrice"></td><td class = "bidQty"></td></tr>
+                    <tr class = "orderBooks bids"><td class = "bidPrice"></td><td class = "bidQty"></td></tr>
+                    <tr class = "orderBooks bids"><td class = "bidPrice"></td><td class = "bidQty"></td></tr>
+                    <tr class = "orderBooks bids"><td class = "bidPrice"></td><td class = "bidQty"></td></tr>
+                    <tr class = "orderBooks bids"><td class = "bidPrice"></td><td class = "bidQty"></td></tr>
+                </table>
+            </div>
+    
+            <div id = "history-wrapper">
+                <p class = "title">Trade History</p>
+                <table id = "historyTable">
+                    <tr class = "ltps"><td class = "tradedPrice">loading</td><td class = "tradedAmount">loading</td><td class = "tradedTime">loading</td></tr>
+                    <tr class = "ltps"><td class = "tradedPrice">loading</td><td class = "tradedAmount">loading</td><td class = "tradedTime">loading</td></tr>
+                    <tr class = "ltps"><td class = "tradedPrice">loading</td><td class = "tradedAmount">loading</td><td class = "tradedTime">loading</td></tr>
+                    <tr class = "ltps"><td class = "tradedPrice">loading</td><td class = "tradedAmount">loading</td><td class = "tradedTime">loading</td></tr>
+                    <tr class = "ltps"><td class = "tradedPrice">loading</td><td class = "tradedAmount">loading</td><td class = "tradedTime">loading</td></tr>
+                    <tr class = "ltps"><td class = "tradedPrice">loading</td><td class = "tradedAmount">loading</td><td class = "tradedTime">loading</td></tr>
+                    <tr class = "ltps"><td class = "tradedPrice">loading</td><td class = "tradedAmount">loading</td><td class = "tradedTime">loading</td></tr>
+                    <tr class = "ltps"><td class = "tradedPrice">loading</td><td class = "tradedAmount">loading</td><td class = "tradedTime">loading</td></tr>
+                    <tr class = "ltps"><td class = "tradedPrice">loading</td><td class = "tradedAmount">loading</td><td class = "tradedTime">loading</td></tr>
+                    <tr class = "ltps"><td class = "tradedPrice">loading</td><td class = "tradedAmount">loading</td><td class = "tradedTime">loading</td></tr>
+                    <tr class = "ltps"><td class = "tradedPrice">loading</td><td class = "tradedAmount">loading</td><td class = "tradedTime">loading</td></tr>
+                    <tr class = "ltps"><td class = "tradedPrice">loading</td><td class = "tradedAmount">loading</td><td class = "tradedTime">loading</td></tr>
+                    <tr class = "ltps"><td class = "tradedPrice">loading</td><td class = "tradedAmount">loading</td><td class = "tradedTime">loading</td></tr>
+                    <tr class = "ltps"><td class = "tradedPrice">loading</td><td class = "tradedAmount">loading</td><td class = "tradedTime">loading</td></tr>
+                    <tr class = "ltps"><td class = "tradedPrice">loading</td><td class = "tradedAmount">loading</td><td class = "tradedTime">loading</td></tr>
+                    <tr class = "ltps"><td class = "tradedPrice">loading</td><td class = "tradedAmount">loading</td><td class = "tradedTime">loading</td></tr>
+                    <tr class = "ltps"><td class = "tradedPrice">loading</td><td class = "tradedAmount">loading</td><td class = "tradedTime">loading</td></tr>
+                    <tr class = "ltps"><td class = "tradedPrice">loading</td><td class = "tradedAmount">loading</td><td class = "tradedTime">loading</td></tr>
+                    <tr class = "ltps"><td class = "tradedPrice">loading</td><td class = "tradedAmount">loading</td><td class = "tradedTime">loading</td></tr>
+                    <tr class = "ltps"><td class = "tradedPrice">loading</td><td class = "tradedAmount">loading</td><td class = "tradedTime">loading</td></tr>
+                    <tr class = "ltps"><td class = "tradedPrice">loading</td><td class = "tradedAmount">loading</td><td class = "tradedTime">loading</td></tr>
+                    <tr class = "ltps"><td class = "tradedPrice">loading</td><td class = "tradedAmount">loading</td><td class = "tradedTime">loading</td></tr>
+                    <tr class = "ltps"><td class = "tradedPrice">loading</td><td class = "tradedAmount">loading</td><td class = "tradedTime">loading</td></tr>
+                    <tr class = "ltps"><td class = "tradedPrice">loading</td><td class = "tradedAmount">loading</td><td class = "tradedTime">loading</td></tr>
+                </table>
+            </div>
+        </div>
+
+
+        <script type="text/javascript" src="./js/deribitAPI.js"></script>
+    </body>
+</html>
