@@ -1,4 +1,3 @@
-let instrumentName = "BTC-PERPETUAL";
 class Trade {
     constructor() {
         this.tradedPrice = 0;
@@ -146,7 +145,7 @@ class Greeks {
     }
 
     setGreeks = function (vega, theta, rho, gamma, delta) {
-        this, vega = vega;
+        this.vega = vega;
         this.theta = theta;
         this.rho = rho;
         this.gamma = gamma;
@@ -231,7 +230,7 @@ class OptionBoard {
 /*-------------------------------------------------------------*/
 /*-------------------------------------------------------------*/
 /*-------------------------------------------------------------*/
-
+let instrumentName = "BTC-PERPETUAL";
 var deribitAPI = new WebSocket('wss://www.deribit.com/ws/api/v2');
 
 deribitAPI.addEventListener('open', function (e) {
@@ -345,9 +344,10 @@ function addHistory(instrument, msg) {
         let tradedPrice = history.tradedPrice;
         let tradedAmount = history.tradedAmount;
         let tradedTime = history.tradedTime;
-        tradedPriceCells[i].innerHTML = tradedPrice;
+        tradedPriceCells[i].innerHTML = fixFloatDigit(tradedPrice, 2);
         tradedAmountCells[i].innerHTML = tradedAmount;
         tradedTimeCells[i].innerHTML = tradedTime;
+
         if(history.direction == 'buy'){
             parentNodes[i].style.color = "lightskyblue";
         }else if(history.direction == "sell"){
@@ -412,17 +412,21 @@ function orderEvent(instrument, msg){
     let spreadCell = document.getElementById('spread');
 
     for(let i = askPrices.length-1, j = 0; i >= 0; i--, j++){
-        askPrices[j].innerHTML = instrument.orderBook.asks[i].price;
+        askPrices[j].innerHTML = fixFloatDigit(instrument.orderBook.asks[i].price, 2);
         askQtys[j].innerHTML = instrument.orderBook.asks[i].qty;
     }
 
     for(let i = 0; i < bidPrices.length; i++){
-        bidPrices[i].innerHTML = instrument.orderBook.bids[i].price;
+        bidPrices[i].innerHTML = fixFloatDigit(instrument.orderBook.bids[i].price, 2);
         bidQtys[i].innerHTML = instrument.orderBook.bids[i].qty;    
     }
 
     spreadCell.innerHTML = instrument.bestAsk - instrument.bestBid;
     
+}
+
+function fixFloatDigit(price, digit){
+    return Number.parseFloat(price).toFixed(digit);
 }
 
 function responseHeartbeat(){
