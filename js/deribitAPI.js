@@ -38,8 +38,8 @@ class HistoryList {
 
     addHistory = function (price, amount, timestamp, direction) {
         for (let i = this.size - 1; i > 0; i--) {
-            this.history[i].setPrice(this.history[i - 1].tradedPrice);
-            this.history[i].setAmount(this.history[i - 1].tradedAmount);
+            this.history[i].setPrice(this.history[i-1].tradedPrice);
+            this.history[i].setAmount(this.history[i-1].tradedAmount);
             this.history[i].tradedTime = this.history[i-1].tradedTime;
             this.history[i].direction = this.history[i-1].direction;
         }
@@ -47,6 +47,16 @@ class HistoryList {
         this.history[0].setAmount(amount);
         this.history[0].setTime(timestamp);
         this.history[0].direction = direction;
+    }
+
+    clearHistory = function(){
+        for(let i = 0; i < this.size; i++){
+            this.history[i].tradedPrice = 0;
+            this.history[i].tradedAmount = 0;
+            this.history[i].tradedTime = 0;
+            this.history[i].tradedDateTime = 0;
+            this.history[i].direction = 0;
+        }
     }
 }
 
@@ -152,7 +162,6 @@ class Greeks {
         this.delta = delta;
     }
 }
-
 class Instrument {
     constructor(historySize) {
         this.orderBook = new OrderBook();
@@ -226,12 +235,16 @@ class OptionBoard {
     }
 }
 
-/*-------------------------------------------------------------*/
-/*-------------------------------------------------------------*/
-/*-------------------------------------------------------------*/
-/*-------------------------------------------------------------*/
+/*============================================================================================*/
+/*============================================================================================*/
+/*============================================================================================*/
+/*============================================================================================*/
+/*============================================================================================*/
+
+
 let instrumentName = "BTC-PERPETUAL";
 var deribitAPI = new WebSocket('wss://www.deribit.com/ws/api/v2');
+let BTC_PERPETUAL;
 
 deribitAPI.addEventListener('open', function (e) {
     let request =
@@ -480,14 +493,45 @@ function drawLayout(){
 }*/
 
 function closeConnection() {
-    deribitAPI.close(3000);
+    deribitAPI.close(3000, "close button pushed");
 }
 
 window.onunload = function () {
-    deribitAPI.close(1000);
+    deribitAPI.close(1000, "window closed");
 }
 
 function sleep(waitMilSec) {
     let start = new Date();
     while (new Date() - start < waitMilSec);
+}
+
+function changeInstrument(name){
+    let unsubscribeReq =
+    {
+        "jsonrpc": "2.0",
+        "id": 12,
+        "method": "public/unsubscribe_all",
+        "params": {
+        }
+    };
+
+    deribitAPI.send(JSON.stringify(unsubscribeReq));
+    console.warn('sent unsubscribe request');
+
+    let request =
+    {
+        "jsonrpc": "2.0",
+        "id": 425,
+        "method": "public/subscribe",
+        "params": {
+            "channels": [
+                "book." + name + ".raw",
+                "trades." + name + ".raw"
+            ]
+        }
+    };
+    instrumentName = name;
+    BTC_PERPETUAL.tradeHistory.clearHistory();
+    deribitAPI.send(JSON.stringify(request));
+    console.warn('sent subscribe request: ' + name);
 }
