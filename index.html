@@ -5,11 +5,11 @@
         <link rel="stylesheet" href="./css/index.css">
     </head>
     <body>
-        <canvas id = "canvas"></canvas>
-        <div class = "closeButton" onclick="closeConnection()">
+        <div class = "closeButton" onclick="closeConnection()" style="display: none;" >
             Close API Connection
         </div>
 
+        <div id = "chart"></div>
         <div id = "side-wrapper">
             <div id = "orderBook-wrapper">
                 <p class = "title">OrderBook</p>
@@ -69,6 +69,17 @@
             </div>
         </div>
 
+        <div id = "datas">
+            <div id = "candle-data">
+                <div id = "candle-open"></div>
+                <div id = "candle-high"></div>
+                <div id = "candle-low"></div>
+                <div id = "candle-close"></div>
+                <div id = "candle-time"></div>
+            </div>    
+        </div>
+        
+        <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
         <script type="text/javascript" src="./js/deribitAPI.js"></script>
     </body>
 </html>

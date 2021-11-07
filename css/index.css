@@ -11,7 +11,7 @@ body{
 #side-wrapper{
     height: 91%;
     position: absolute;
-    top: 60px;
+    top: 0;
     right: 5px;
     width: 13%;
     font-size: 70%;
@@ -52,11 +52,12 @@ body{
     text-align: right;
 }
 
-#canvas{
+#chart{
     position: absolute;
-    top: 60px;
-    left: 5px;
-    width: 85%;
+    top: 0;
+    right: 14%;
+    width: 70%;
+    max-width: 85%;
     border: 1px solid #aaaaaa;
     height: 91%;
 }
