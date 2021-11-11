@@ -235,6 +235,57 @@ class OptionBoard {
     }
 }
 
+class ChartData{
+    //data[0] is oldest, data[data.length-1] is latest
+    constructor(resolution){
+        this.opens = new Array();
+        this.highs = new Array();
+        this.lows = new Array();
+        this.closes = new Array();
+        
+        //represented in timestamp-UNIX epoch, minimum flactation is 1sec
+        this.ticks = new Array();    
+
+        //timeScale of each candle, represented in min, exeption: 1day = "1D"   
+        this.resolution = resolution;
+
+    }
+
+    getTradingViewData = function(){
+        let candles = new Array(this.opens.length);
+        let concatStr = "";
+        for(let i = 0; i < this.opens.length; i++){
+            candles[i] = `{ time: ${this.ticks[i]}, open: ${this.opens[i]}, high: ${this.highs[i]}, low: ${this.lows[i]}, close: ${this.closes[i]} },`;
+            concatStr += candles[i];
+        }
+        return concatStr;
+    }
+
+    updateLatestOHLC = function(open, high, low, close){
+        this.opens[this.opens.length-1] = open;
+        this.highs[this.highs.length-1] = high;
+        this.lows[this.lows.length-1] = low;
+        this.closes[this.closes.length-1] = close;
+    }
+
+    addNextCandle = function(open, high, low, close){
+        this.opens.push(open);
+        this.highs.push(high);
+        this.lows.push(low);
+        this.closes.push(close);
+        
+        let nextTime;
+        if(this.resolution == "1D"){
+            nextTime = this.times[this.times.length-1] + 86400;
+        }else{
+            nextTime = this.times[this.times.length-1] + this.resolution * 60;
+        }
+        
+        this.times.push(nextTime);
+    }
+
+}
+
 /*============================================================================================*/
 /*============================================================================================*/
 /*============================================CHART===========================================*/
@@ -556,5 +607,4 @@ function changeInstrument(name){
     deribitAPI.send(JSON.stringify(request));
     console.warn('sent subscribe request: ' + name);
 }
-
 
