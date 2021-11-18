@@ -296,6 +296,11 @@ export class ChartData{
         
         this.times.push(nextTime);
     }
+    
+    updateChart = function(candleSeries){
+        let chartData = this.getTradingViewData();
+        candleSeries.setData(chartData);
+    }
 
 }
 
