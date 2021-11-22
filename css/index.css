@@ -9,7 +9,7 @@ body{
 }
 
 #side-wrapper{
-    height: 91%;
+    height: 99%;
     position: absolute;
     top: 0;
     right: 5px;
@@ -17,6 +17,33 @@ body{
     font-size: 70%;
     border: solid 1px #aaaaaa;
     overflow: hidden;
+}
+
+#instruments-wrapper{
+    width: 15%;
+    position: absolute;
+    top: 0;
+    left: 5px;
+    font-size: 70%;
+    height: 98%;
+    overflow: scroll;
+    border: solid 1px #aaaaaa;
+}
+
+#instruments-wrapper::-webkit-scrollbar{
+    width: 5px;
+    height: 0;
+}
+
+#instruments-wrapper::-webkit-scrollbar-track{
+    border-radius: 5px;
+    box-shadow: 0 0 4px #aaa inset;
+}
+
+#insturments-wrapper::-webkit-scrollbar-thumb{
+    border-radius: 5px;
+    background: #1959A8;
+    
 }
 
 .title{
@@ -59,7 +86,7 @@ body{
     width: 70%;
     max-width: 85%;
     border: 1px solid #aaaaaa;
-    height: 91%;
+    height: 99%;
 }
 
 #historyTable{

@@ -3,16 +3,8 @@ import * as lib from './lib.js';
 var deribitAPI = new WebSocket('wss://www.deribit.com/ws/api/v2');
 let CURRENCY = "BTC";
 
-let allInstrument = lib.getAllInstrument(CURRENCY, false, deribitAPI);
+lib.showInstruments(lib.getAllInstrument(CURRENCY, false, deribitAPI));
 
-for(let i = 0; i < allInstrument.length; i++){
-    if(allInstrument[i].kind == "options"){
-        console.log(allInstrument[i]);
-    }else{
-        console.warn(allInstrument[i]);
-    }
-    
-}
 
 
 /*============================================================================================*/

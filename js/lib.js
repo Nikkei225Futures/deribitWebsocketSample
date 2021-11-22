@@ -296,16 +296,11 @@ export class ChartData{
         
         this.times.push(nextTime);
     }
-    
-    updateChart = function(candleSeries){
-        let chartData = this.getTradingViewData();
-        candleSeries.setData(chartData);
-    }
 
 }
 
 export function getAllInstrument(currency, expired){
-    let response = throwRestApiReq('https://www.deribit.com/api/v2/public/get_instruments?currency=BTC&expired=false', 1500);
+    let response = throwRestApiReq(`https://www.deribit.com/api/v2/public/get_instruments?currency=${currency}&expired=${expired}`, 1500);
     response = JSON.parse(response);
     console.log(response);
     let data = response.result;
@@ -342,4 +337,72 @@ export function throwRestApiReq(uri, waitMilSec){
 export function busySleep(milSec){
     const start = new Date();
     while(new Date() - start < milSec);
+}
+
+export function showInstruments(allInstrument){
+    let instrumentsFutures = Array();
+    let instrumentsOptions = Array();
+    
+    for(let i = 0; i < allInstrument.length; i++){
+        if(allInstrument[i].kind == "options"){
+            console.log(allInstrument[i]);
+            instrumentsOptions.push(allInstrument[i]);
+        }else{
+            console.warn(allInstrument[i]);
+            instrumentsFutures.push(allInstrument[i]);
+        }
+    }
+
+    let instrumentsArea = document.getElementById("instruments-wrapper");
+    let futuresDivs = Array(instrumentsFutures.length);
+
+    for(let i = 0; i < instrumentsFutures.length; i++){
+        futuresDivs[i] = document.createElement("div");
+        futuresDivs[i].id = instrumentsFutures[i].name;
+        futuresDivs[i].innerHTML = instrumentsFutures[i].name;
+
+        let optionsDivs = Array();
+        for(let j = 0; j < instrumentsOptions.length; j++){
+            if(instrumentsOptions[j].name.indexOf(futuresDivs[i].id) != -1){
+                optionsDivs.push("");
+                optionsDivs[optionsDivs.length-1] = document.createElement("div");
+                optionsDivs[optionsDivs.length-1].id = instrumentsOptions[j].name;
+                optionsDivs[optionsDivs.length-1].innerHTML = instrumentsOptions[j].name;
+            }
+        }
+
+        let strikes = Array(optionsDivs.length);
+        for(let j = 0; j < optionsDivs.length; j++){
+            let splitedName = optionsDivs[j].id.split("-");
+            strikes[j] = Number(splitedName[2]);
+        }
+
+        console.time();
+        //sort by strike price
+        let swapCounter = 0;
+        do{
+            swapCounter = 0;
+            for(let j = 0; j < optionsDivs.length-1; j++){
+                if(strikes[j] > strikes[j+1]){
+                    let tmp = strikes[j];
+                    strikes[j] = strikes[j+1];
+                    strikes[j+1] = tmp;
+                    tmp = optionsDivs[j]
+                    optionsDivs[j] = optionsDivs[j+1];
+                    optionsDivs[j+1] = tmp;
+                    swapCounter++;
+                }
+            }
+        }while(swapCounter != 0);
+        console.timeEnd();
+
+        for(let j = 0; j < optionsDivs.length; j++){
+            futuresDivs[i].appendChild(optionsDivs[j]);
+        }
+        
+
+    }
+    for(let i = 0; i < instrumentsFutures.length; i++){
+        instrumentsArea.appendChild(futuresDivs[i]);
+    }
 }
