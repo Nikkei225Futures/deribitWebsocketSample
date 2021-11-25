@@ -2,9 +2,121 @@ import * as lib from './lib.js';
 
 var deribitAPI = new WebSocket('wss://www.deribit.com/ws/api/v2');
 let CURRENCY = "BTC";
+let instrumentName = "BTC-PERPETUAL";
+let historySize = 50;
+let allInstrument = lib.getAllInstrument(CURRENCY, false, deribitAPI)
+lib.showInstruments(allInstrument);
 
-lib.showInstruments(lib.getAllInstrument(CURRENCY, false, deribitAPI));
+deribitAPI.addEventListener("open", e => {
+	subscribeInstrument(instrumentName);
+	requestHeartBeat(300);
+});
 
+deribitAPI.addEventListener("message", e => {
+	msg = JSON.parse(e.data);
+	console.log(msg);
+
+	let channel = msg.params.channel;
+	let method = msg.method;
+
+	if(method == "subscription"){
+		if(channel.indexOf("trades") != -1){
+			if(channel.indexOf(mainInstrument.name) != -1){
+				tradeEvent(mainInstrument, msg);
+			}
+		}else if(channel.indexOf("book") != -1){
+			if(channel.indexOf(mainInstrument.name) != -1){
+				orderEvent(mainInstrument, msg);
+			}
+		}
+	}else if(method == "heartbeat"){
+		responseHeartbeat();
+	}
+
+});
+
+deribitAPI.addEventListener("error", e => {
+	console.error("websocket error");
+});
+
+deribitAPI.addEventListener("close", e => {
+	if (window.navigator.onLine) {
+        console.warn('websocket, lost connection to wss://www.deribit.com/ws/api/v2: ', e);
+    } else {
+        console.warn('websocket, lost connection to wss://www.deribit.com/ws/api/v2 due to network problem: ', e);
+    }
+
+    let currentTime = new Date();
+    console.warn(`closed on: ${currentTime.getHours()}:${currentTime.getMinutes()}:${currentTime.getSeconds()}`);
+    
+    if(e.code == 1006){
+        console.warn('reload page');
+        location.reload();
+    }
+
+});
+
+function responseHeartbeat(){
+    console.warn('heartbeat signal received');
+    let response = 
+    {
+        "method": "public/test",
+        "params": {},
+        "jsonrpc": "2.0",
+        "id": 111
+    };
+    deribitAPI.send(JSON.stringify(response));
+    console.warn('sent response against heartbeat');
+}
+
+//duration = second
+requestHeartBeat = function(duration){
+	let heartBeatReq =
+	{
+        "method": "public/set_heartbeat",
+        "params": {
+            "interval": duration
+        },
+        "jsonrpc": "2.0",
+        "id": 2
+    };
+	
+	deribitAPI.send(JSON.stringify(subscribeReq));
+	console.warn(`send heatbeat request`);
+}
+
+subscribeInstrument = function(instrumentName){
+	let mainInstrument;
+	for(let i = 0; i < allInstrument.length; i++){
+		if(allInstrument[i].name == instrumentName){
+			mainInstrument = allInstrument[i];
+		}
+	}
+
+	let subscribeReq =
+    {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "method": "public/subscribe",
+        "params": {
+            "channels": [
+                "book." + instrumentName + ".raw",
+                "trades." + instrumentName + ".raw"
+            ]
+        }
+	};
+
+	deribitAPI.send(JSON.stringify(subscribeReq));
+	console.warn(`send subscrbe request ${mainInstrument.name}`);
+}
+
+function closeConnection() {
+    deribitAPI.close(3000, "close button pushed");
+}
+
+window.onunload = function () {
+    deribitAPI.close(1000, "window closed");
+}
 
 
 /*============================================================================================*/

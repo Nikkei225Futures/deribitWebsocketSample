@@ -293,8 +293,11 @@ export class ChartData{
         }else{
             nextTime = this.times[this.times.length-1] + this.resolution * 60;
         }
-        
         this.times.push(nextTime);
+    }
+
+    showCurrentChart = function(candleseries){
+        candleSeries.setData(this.getTradingViewData());
     }
 
 }
