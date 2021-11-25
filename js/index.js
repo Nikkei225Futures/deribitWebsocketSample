@@ -70,7 +70,7 @@ function responseHeartbeat(){
 }
 
 //duration = second
-requestHeartBeat = function(duration){
+function requestHeartBeat(duration){
 	let heartBeatReq =
 	{
         "method": "public/set_heartbeat",
@@ -85,7 +85,7 @@ requestHeartBeat = function(duration){
 	console.warn(`send heatbeat request`);
 }
 
-subscribeInstrument = function(instrumentName){
+function subscribeInstrument(instrumentName){
 	let mainInstrument;
 	for(let i = 0; i < allInstrument.length; i++){
 		if(allInstrument[i].name == instrumentName){
