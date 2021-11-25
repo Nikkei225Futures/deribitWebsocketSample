@@ -12,7 +12,7 @@ deribitAPI.addEventListener("open", e => {
 	requestHeartBeat(300);
 });
 
-deribitAPI.addEventListener("message", e => {
+deribitAPI.addEventListener("message", msg => {
 	msg = JSON.parse(e.data);
 	console.log(msg);
 
