@@ -143,6 +143,17 @@ export class OrderBook {
             }        
         }
     }
+    
+    clearOrderBook = function(){
+        for(let i = 0; i < this.bids.length; i++){
+            this.bids[i].price = 0;
+            this.bids[i].qty = 0;
+        }        
+        for(let i = 0; i < this.asks.length; i++){
+            this.asks[i].price = 0;
+            this.asks[i].qty = 0;
+        }
+    }
 }
 
 export class Greeks {
@@ -362,7 +373,9 @@ export function showInstruments(allInstrument){
     for(let i = 0; i < instrumentsFutures.length; i++){
         futuresDivs[i] = document.createElement("div");
         futuresDivs[i].id = instrumentsFutures[i].name;
+        futuresDivs[i].setAttribute("class", "instrument");
         futuresDivs[i].innerHTML = instrumentsFutures[i].name;
+        //futuresDivs[i].setAttribute("onclick", `lib.changeInstrument("${instrumentsFutures[i].name}")`);
 
         let optionsDivs = Array();
         for(let j = 0; j < instrumentsOptions.length; j++){
@@ -370,7 +383,9 @@ export function showInstruments(allInstrument){
                 optionsDivs.push("");
                 optionsDivs[optionsDivs.length-1] = document.createElement("div");
                 optionsDivs[optionsDivs.length-1].id = instrumentsOptions[j].name;
+                optionsDivs[optionsDivs.length-1].setAttribute("class", "instrument");
                 optionsDivs[optionsDivs.length-1].innerHTML = instrumentsOptions[j].name;
+                //optionsDivs[optionsDivs.length-1].setAttribute("onclick", `changeInstrument("${instrumentsOptions[j].name}")`);
             }
         }
 
@@ -407,5 +422,107 @@ export function showInstruments(allInstrument){
     }
     for(let i = 0; i < instrumentsFutures.length; i++){
         instrumentsArea.appendChild(futuresDivs[i]);
+    }
+}
+
+
+export function tradeEvent(mainInstrument, msg){
+	addHistory(mainInstrument, msg);
+}
+
+function addHistory(instrument, msg) {
+    let data = msg.params.data;
+    for (let i = 0; i < data.length; i++) {
+        let price = data[i].price;
+        let amount = data[i].amount;
+        let timeStamp = data[i].timestamp;
+        let direction = data[i].direction;
+        instrument.tradeHistory.addHistory(price, amount, timeStamp, direction);
+    }
+    
+    let tradedPriceCells = document.getElementsByClassName("tradedPrice");
+    let tradedAmountCells = document.getElementsByClassName("tradedAmount");
+    let tradedTimeCells = document.getElementsByClassName("tradedTime");
+    let parentNodes = document.getElementsByClassName("ltps");
+    for(let i = 0; i < tradedPriceCells.length; i++){
+        let history = instrument.tradeHistory.history[i];
+        let tradedPrice = history.tradedPrice;
+        let tradedAmount = history.tradedAmount;
+        let tradedTime = history.tradedTime;
+        tradedPriceCells[i].innerHTML = fixFloatDigit(tradedPrice, 2, instrument.kind);
+        tradedAmountCells[i].innerHTML = tradedAmount;
+        tradedTimeCells[i].innerHTML = tradedTime;
+
+        if(history.direction == 'buy'){
+            parentNodes[i].style.color = "lightskyblue";
+        }else if(history.direction == "sell"){
+            parentNodes[i].style.color = "salmon";
+        }
+    }
+}
+
+export function orderEvent(instrument, msg){
+	let data = msg.params.data;
+    let bids = data.bids;
+    let asks = data.asks;
+    let type = data.type;
+
+    if(type == 'snapshot'){
+        instrument.orderBook.setSnapshot(asks, bids);
+    }else if(type == 'change'){
+        for(let i = 0; i < bids.length; i++){
+            let orderType = bids[i][0];
+            let price = bids[i][1];
+            let qty = bids[i][2];
+            if(orderType == 'new'){
+                instrument.orderBook.insertNewBid(price, qty);
+            }else if(orderType == 'delete'){
+                instrument.orderBook.deleteBid(price);
+            }else if(orderType == 'change'){
+                instrument.orderBook.changeBidQty(price, qty)
+            }
+        }
+    
+        for(let i = 0; i < asks.length; i++){
+            let orderType = asks[i][0];
+            let price = asks[i][1];
+            let qty = asks[i][2];
+            if(orderType == 'new'){
+                instrument.orderBook.insertNewAsk(price, qty);
+            }else if(orderType == 'delete'){
+                instrument.orderBook.deleteAsk(price);
+            }else if(orderType == 'change'){
+                instrument.orderBook.changeAskQty(price, qty)
+            }    
+        }
+    }
+
+    instrument.updateOrderLv1();
+
+    let askPrices = document.getElementsByClassName('askPrice');
+    let askQtys = document.getElementsByClassName('askQty');
+    let bidPrices = document.getElementsByClassName('bidPrice');
+    let bidQtys = document.getElementsByClassName('bidQty');
+    let spreadCell = document.getElementById('spread');
+
+    for(let i = askPrices.length-1, j = 0; i >= 0; i--, j++){
+        askPrices[j].innerHTML = fixFloatDigit(instrument.orderBook.asks[i].price, 2, instrument.kind);
+        askQtys[j].innerHTML = instrument.orderBook.asks[i].qty;
+    }
+
+    for(let i = 0; i < bidPrices.length; i++){
+        bidPrices[i].innerHTML = fixFloatDigit(instrument.orderBook.bids[i].price, 2, instrument.kind);
+        bidQtys[i].innerHTML = instrument.orderBook.bids[i].qty;    
+    }
+
+    spreadCell.innerHTML = instrument.bestAsk - instrument.bestBid;
+ 
+}
+
+function fixFloatDigit(price, digit, kind){
+    if(kind == "futures"){
+        return Number.parseFloat(price).toFixed(digit);
+    }else{
+        return price;
     }
 }

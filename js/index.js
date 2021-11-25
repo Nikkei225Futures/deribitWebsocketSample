@@ -2,14 +2,21 @@ import * as lib from './lib.js';
 
 var deribitAPI = new WebSocket('wss://www.deribit.com/ws/api/v2');
 let CURRENCY = "BTC";
-let instrumentName = "BTC-PERPETUAL";
-let historySize = 50;
+let initInstrumentName = "BTC-PERPETUAL";
 let mainInstrument;
 let allInstrument = lib.getAllInstrument(CURRENCY, false, deribitAPI)
 lib.showInstruments(allInstrument);
+let instrumentDivs = document.getElementsByClassName("instrument");
+
+for(let i = 0; i < instrumentDivs.length; i++){
+    instrumentDivs[i].addEventListener("click", e => {
+        changeInstrument(instrumentDivs[i].id);
+        e.stopPropagation();
+    });
+}
 
 deribitAPI.addEventListener("open", e => {
-	subscribeInstrument(instrumentName);
+	subscribeInstrument(initInstrumentName);
 	requestHeartBeat(300);
 });
 
@@ -23,11 +30,11 @@ deribitAPI.addEventListener("message", function (e) {
 	if(method == "subscription"){
 		if(channel.indexOf("trades") != -1){
 			if(channel.indexOf(mainInstrument.name) != -1){
-				tradeEvent(mainInstrument, msg);
+				lib.tradeEvent(mainInstrument, msg);
 			}
 		}else if(channel.indexOf("book") != -1){
 			if(channel.indexOf(mainInstrument.name) != -1){
-				orderEvent(mainInstrument, msg);
+				lib.orderEvent(mainInstrument, msg);
 			}
 		}
 	}else if(method == "heartbeat"){
@@ -35,98 +42,6 @@ deribitAPI.addEventListener("message", function (e) {
 	}
 
 });
-
-function tradeEvent(mainInstrument, msg){
-	addHistory(mainInstrument, msg);
-}
-
-function addHistory(instrument, msg) {
-    let data = msg.params.data;
-    for (let i = 0; i < data.length; i++) {
-        let price = data[i].price;
-        let amount = data[i].amount;
-        let timeStamp = data[i].timestamp;
-        let direction = data[i].direction;
-        instrument.tradeHistory.addHistory(price, amount, timeStamp, direction);
-    }
-    
-    let tradedPriceCells = document.getElementsByClassName("tradedPrice");
-    let tradedAmountCells = document.getElementsByClassName("tradedAmount");
-    let tradedTimeCells = document.getElementsByClassName("tradedTime");
-    let parentNodes = document.getElementsByClassName("ltps");
-    for(let i = 0; i < tradedPriceCells.length; i++){
-        let history = instrument.tradeHistory.history[i];
-        let tradedPrice = history.tradedPrice;
-        let tradedAmount = history.tradedAmount;
-        let tradedTime = history.tradedTime;
-        tradedPriceCells[i].innerHTML = fixFloatDigit(tradedPrice, 2);
-        tradedAmountCells[i].innerHTML = tradedAmount;
-        tradedTimeCells[i].innerHTML = tradedTime;
-
-        if(history.direction == 'buy'){
-            parentNodes[i].style.color = "lightskyblue";
-        }else if(history.direction == "sell"){
-            parentNodes[i].style.color = "salmon";
-        }
-    }
-
-function orderEvent(mainInstrument, msg){
-	let data = msg.params.data;
-    let bids = data.bids;
-    let asks = data.asks;
-    let type = data.type;
-
-    if(type == 'snapshot'){
-        instrument.orderBook.setSnapshot(asks, bids);
-    }else if(type == 'change'){
-        for(let i = 0; i < bids.length; i++){
-            let orderType = bids[i][0];
-            let price = bids[i][1];
-            let qty = bids[i][2];
-            if(orderType == 'new'){
-                instrument.orderBook.insertNewBid(price, qty);
-            }else if(orderType == 'delete'){
-                instrument.orderBook.deleteBid(price);
-            }else if(orderType == 'change'){
-                instrument.orderBook.changeBidQty(price, qty)
-            }
-        }
-    
-        for(let i = 0; i < asks.length; i++){
-            let orderType = asks[i][0];
-            let price = asks[i][1];
-            let qty = asks[i][2];
-            if(orderType == 'new'){
-                instrument.orderBook.insertNewAsk(price, qty);
-            }else if(orderType == 'delete'){
-                instrument.orderBook.deleteAsk(price);
-            }else if(orderType == 'change'){
-                instrument.orderBook.changeAskQty(price, qty)
-            }    
-        }
-    }
-
-    instrument.updateOrderLv1();
-
-    let askPrices = document.getElementsByClassName('askPrice');
-    let askQtys = document.getElementsByClassName('askQty');
-    let bidPrices = document.getElementsByClassName('bidPrice');
-    let bidQtys = document.getElementsByClassName('bidQty');
-    let spreadCell = document.getElementById('spread');
-
-    for(let i = askPrices.length-1, j = 0; i >= 0; i--, j++){
-        askPrices[j].innerHTML = fixFloatDigit(instrument.orderBook.asks[i].price, 2);
-        askQtys[j].innerHTML = instrument.orderBook.asks[i].qty;
-    }
-
-    for(let i = 0; i < bidPrices.length; i++){
-        bidPrices[i].innerHTML = fixFloatDigit(instrument.orderBook.bids[i].price, 2);
-        bidQtys[i].innerHTML = instrument.orderBook.bids[i].qty;    
-    }
-
-    spreadCell.innerHTML = instrument.bestAsk - instrument.bestBid;
- 
-}
 
 deribitAPI.addEventListener("error", e => {
 	console.error("websocket error");
@@ -149,6 +64,22 @@ deribitAPI.addEventListener("close", e => {
 
 });
 
+//duration = second
+function requestHeartBeat(duration){
+	let heartBeatReq =
+	{
+        "method": "public/set_heartbeat",
+        "params": {
+            "interval": duration
+        },
+        "jsonrpc": "2.0",
+        "id": 2
+    };
+	
+	deribitAPI.send(JSON.stringify(heartBeatReq));
+	console.warn(`send heatbeat request`);
+}
+
 function responseHeartbeat(){
     console.warn('heartbeat signal received');
     let response = 
@@ -162,25 +93,9 @@ function responseHeartbeat(){
     console.warn('sent response against heartbeat');
 }
 
-//duration = second
-function requestHeartBeat(duration){
-	let heartBeatReq =
-	{
-        "method": "public/set_heartbeat",
-        "params": {
-            "interval": duration
-        },
-        "jsonrpc": "2.0",
-        "id": 2
-    };
-	
-	deribitAPI.send(JSON.stringify(subscribeReq));
-	console.warn(`send heatbeat request`);
-}
-
 function subscribeInstrument(instrumentName){
 	for(let i = 0; i < allInstrument.length; i++){
-		if(allInstrument[i].name == instrumentName){
+		if(allInstrument[i].name == initInstrumentName){
 			mainInstrument = allInstrument[i];
 		}
 	}
@@ -202,8 +117,43 @@ function subscribeInstrument(instrumentName){
 	console.warn(`send subscrbe request ${mainInstrument.name}`);
 }
 
-function closeConnection() {
-    deribitAPI.close(3000, "close button pushed");
+function changeInstrument(instrumentName){
+    let unsubscribeReq =
+    {
+        "jsonrpc": "2.0",
+        "id": 12,
+        "method": "public/unsubscribe_all",
+        "params": {
+        }
+    };
+
+    deribitAPI.send(JSON.stringify(unsubscribeReq));
+    
+    for(let i = 0; i < allInstrument.length; i++){
+		if(allInstrument[i].name === instrumentName){
+			mainInstrument = allInstrument[i];
+		}
+	}
+
+    mainInstrument.tradeHistory.clearHistory();
+    mainInstrument.orderBook.clearOrderBook();
+    
+    let request =
+    {
+        "jsonrpc": "2.0",
+        "id": 425,
+        "method": "public/subscribe",
+        "params": {
+            "channels": [
+                "book." + instrumentName + ".raw",
+                "trades." + instrumentName + ".raw"
+            ]
+        }
+    };
+
+    console.warn("changeInstrument-subscribe new instrument");
+    console.warn(request);
+    deribitAPI.send(JSON.stringify(request));
 }
 
 window.onunload = function () {
