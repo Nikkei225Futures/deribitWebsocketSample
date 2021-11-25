@@ -25,6 +25,14 @@ export class Trade {
         this.tradedDateTime = `${month}/${date} ${hour}:${minute}:${second}`;
         this.tradedTime  = `${hour}:${minute}:${second}`;
     }
+
+    initAllValue = function(){
+        this.tradedPrice = 0;
+        this.tradedAmount = 0;
+        this.tradedDateTime = 0;
+        this.tradedTime = 0;
+        this.direction = "none";
+    }
 }
 
 export class HistoryList {
@@ -51,11 +59,7 @@ export class HistoryList {
 
     clearHistory = function(){
         for(let i = 0; i < this.size; i++){
-            this.history[i].tradedPrice = 0;
-            this.history[i].tradedAmount = 0;
-            this.history[i].tradedTime = 0;
-            this.history[i].tradedDateTime = 0;
-            this.history[i].direction = 0;
+            this.history[i].initAllValue();
         }
     }
 }
@@ -439,7 +443,10 @@ function addHistory(instrument, msg) {
         let direction = data[i].direction;
         instrument.tradeHistory.addHistory(price, amount, timeStamp, direction);
     }
-    
+    showCurrentHistory(instrument);
+}
+
+export function showCurrentHistory(instrument){
     let tradedPriceCells = document.getElementsByClassName("tradedPrice");
     let tradedAmountCells = document.getElementsByClassName("tradedAmount");
     let tradedTimeCells = document.getElementsByClassName("tradedTime");
@@ -457,6 +464,8 @@ function addHistory(instrument, msg) {
             parentNodes[i].style.color = "lightskyblue";
         }else if(history.direction == "sell"){
             parentNodes[i].style.color = "salmon";
+        }else{
+            parentNodes[i].style.color = "#aaaaaa";
         }
     }
 }

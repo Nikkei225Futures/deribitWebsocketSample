@@ -137,7 +137,8 @@ function changeInstrument(instrumentName){
 
     mainInstrument.tradeHistory.clearHistory();
     mainInstrument.orderBook.clearOrderBook();
-    
+    lib.showCurrentHistory(mainInstrument);
+
     let request =
     {
         "jsonrpc": "2.0",
