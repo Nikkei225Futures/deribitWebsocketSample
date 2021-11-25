@@ -4,6 +4,7 @@ var deribitAPI = new WebSocket('wss://www.deribit.com/ws/api/v2');
 let CURRENCY = "BTC";
 let instrumentName = "BTC-PERPETUAL";
 let historySize = 50;
+let mainInstrument;
 let allInstrument = lib.getAllInstrument(CURRENCY, false, deribitAPI)
 lib.showInstruments(allInstrument);
 
@@ -12,8 +13,8 @@ deribitAPI.addEventListener("open", e => {
 	requestHeartBeat(300);
 });
 
-deribitAPI.addEventListener("message", msg => {
-	msg = JSON.parse(e.data);
+deribitAPI.addEventListener("message", function (e) {
+	let msg = JSON.parse(e.data);
 	console.log(msg);
 
 	let channel = msg.params.channel;
@@ -86,7 +87,6 @@ function requestHeartBeat(duration){
 }
 
 function subscribeInstrument(instrumentName){
-	let mainInstrument;
 	for(let i = 0; i < allInstrument.length; i++){
 		if(allInstrument[i].name == instrumentName){
 			mainInstrument = allInstrument[i];
