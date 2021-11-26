@@ -311,7 +311,7 @@ export class ChartData{
         this.times.push(nextTime);
     }
 
-    showCurrentChart = function(candleseries){
+    showCurrentChart = function(candleSeries){
         candleSeries.setData(this.getTradingViewData());
     }
 
