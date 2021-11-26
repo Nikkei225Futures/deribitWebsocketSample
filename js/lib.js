@@ -181,6 +181,7 @@ export class Instrument {
     constructor(historySize) {
         this.orderBook = new OrderBook();
         this.tradeHistory = new HistoryList(historySize);
+        this.chartData = new ChartData(1);  //time resolution in the chart is init by 5
         this.bestAsk = this.orderBook.asks[0].price;
         this.bestBid = this.orderBook.bids[0].price;
         
@@ -281,12 +282,17 @@ export class ChartData{
 
     getTradingViewData = function(){
         let candles = new Array(this.opens.length);
-        let concatStr = "";
         for(let i = 0; i < this.opens.length; i++){
-            candles[i] = `{ time: ${this.ticks[i]}, open: ${this.opens[i]}, high: ${this.highs[i]}, low: ${this.lows[i]}, close: ${this.closes[i]} },`;
-            concatStr += candles[i];
+            let candle ={
+                time: this.ticks[i],
+                open: this.opens[i],
+                high: this.opens[i],
+                low: this.lows[i],
+                close: this.closes[i]
+            };
+            candles[i] = candle;
         }
-        return concatStr;
+        return candles;
     }
 
     updateLatestOHLC = function(open, high, low, close){
@@ -296,23 +302,19 @@ export class ChartData{
         this.closes[this.closes.length-1] = close;
     }
 
-    addNextCandle = function(open, high, low, close){
-        this.opens.push(open);
-        this.highs.push(high);
-        this.lows.push(low);
-        this.closes.push(close);
-        
-        let nextTime;
-        if(this.resolution == "1D"){
-            nextTime = this.times[this.times.length-1] + 86400;
-        }else{
-            nextTime = this.times[this.times.length-1] + this.resolution * 60;
+    setNewChartData = function(opens, highs, lows, closes, ticks){
+        for(let i = 0; i < opens.length; i++){
+            this.opens.push(opens[i]);
+            this.highs.push(highs[i]);
+            this.lows.push(lows[i]);
+            this.closes.push(closes[i]);
+            this.ticks.push(ticks[i]);
         }
-        this.times.push(nextTime);
     }
 
     showCurrentChart = function(candleSeries){
-        candleSeries.setData(this.getTradingViewData());
+        let data = this.getTradingViewData();
+        candleSeries.setData(data);
     }
 
 }
@@ -334,6 +336,30 @@ export function getAllInstrument(currency, expired){
 
     return allInstruments;
 
+}
+
+export function initChart(instrument, msg, candleSeries){
+    console.warn("chart event");
+    console.warn(msg);
+    let opens = msg.result.open;
+    let highs = msg.result.high;
+    let lows = msg.result.low;
+    let closes = msg.result.close;
+    let ticks = msg.result.ticks;
+
+    for(let i = 0; i < ticks.length; i++){
+        ticks[i] = ticks[i]/1000;
+    }
+
+    instrument.chartData.setNewChartData(opens, highs, lows, closes, ticks);
+    instrument.chartData.showCurrentChart(candleSeries);
+}
+
+export function getChartData(instrumentName, start, end, resolution){
+    let response = throwRestApiReq(`https://www.deribit.com/api/v2/public/get_tradingview_chart_data?end_timestamp=${end}&instrument_name=${instrumentName}&resolution=${resolution}&start_timestamp=${start}`, 0);
+    response = JSON.parse(response);
+    console.warn(response);
+    return response;
 }
 
 export function throwRestApiReq(uri, waitMilSec){
@@ -430,9 +456,41 @@ export function showInstruments(allInstrument){
 }
 
 
-export function tradeEvent(mainInstrument, msg){
+export function tradeEvent(mainInstrument, msg, candleSeries){
 	addHistory(mainInstrument, msg);
+    addTradeData(mainInstrument, msg, candleSeries);
 }
+
+function addTradeData(instrument, msg, candleSeries){
+    let lastTrade = msg.params.data[msg.params.data.length-1];
+    let tradedPrice = lastTrade.price;
+
+    let li = instrument.chartData.ticks.length-1;   //last index
+    let nextTime;
+    if(instrument.chartData.resolution == "1D"){
+        nextTime = instrument.chartData.ticks[li] + 86400;
+    }else{
+        nextTime = instrument.chartData.ticks[li] + instrument.chartData.resolution*60;
+    }
+
+    //if the current time > nextTick time, add candlestick, else update data
+    if(Date.now()/1000 > nextTime){
+        instrument.chartData.opens.push(tradedPrice);
+        instrument.chartData.highs.push(tradedPrice);
+        instrument.chartData.lows.push(tradedPrice);
+        instrument.chartData.closes.push(tradedPrice);
+        instrument.chartData.ticks.push(nextTime);
+    }else{
+        instrument.chartData.closes[li] = tradedPrice;
+        if(tradedPrice > instrument.chartData.highs[li]){
+            instrument.chartData.highs[li] = tradedPrice;
+        }else if(tradedPrice < instrument.chartData.lows[li]){
+            instrument.chartData.lows[li] = tradedPrice;
+        }
+    }
+    instrument.chartData.showCurrentChart(candleSeries);
+}
+
 
 function addHistory(instrument, msg) {
     let data = msg.params.data;
@@ -555,4 +613,3 @@ function fixFloatDigitByKind(price, digit, kind){
 function fixFloatDigit(price, digit){
     return Number.parseFloat(price).toFixed(digit);
 }
-

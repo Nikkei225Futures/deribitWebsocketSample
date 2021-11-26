@@ -11,6 +11,7 @@ lib.showInstruments(allInstrument);
 let instrumentDivs = document.getElementsByClassName("instrument");
 mainInstrument =  getCurrentMainInstrument(initInstrumentName);
 
+//click event on instrument list
 for(let i = 0; i < instrumentDivs.length; i++){
     instrumentDivs[i].addEventListener("click", e => {
         changeInstrument(instrumentDivs[i].id);
@@ -33,7 +34,7 @@ deribitAPI.addEventListener("message", function (e) {
 	if(method == "subscription"){
 		if(channel.indexOf("trades") != -1){
 			if(channel.indexOf(mainInstrument.name) != -1){
-				lib.tradeEvent(mainInstrument, msg);
+				lib.tradeEvent(mainInstrument, msg, candleSeries);
 			}
 		}else if(channel.indexOf("book") != -1){
 			if(channel.indexOf(mainInstrument.name) != -1){
@@ -43,7 +44,6 @@ deribitAPI.addEventListener("message", function (e) {
 	}else if(method == "heartbeat"){
 		responseHeartbeat();
 	}
-
 });
 
 deribitAPI.addEventListener("error", e => {
@@ -112,6 +112,10 @@ function subscribeInstrument(instrumentName){
 
 	deribitAPI.send(JSON.stringify(subscribeReq));
 	console.warn(`send subscrbe request ${mainInstrument.name}`);
+    
+    let endTime = Date.now() + 60000;
+    let msg = lib.getChartData(instrumentName, 0, endTime, mainInstrument.chartData.resolution);
+    lib.initChart(mainInstrument, msg, candleSeries);
 }
 
 function changeInstrument(instrumentName){
@@ -188,10 +192,9 @@ var chart = LightweightCharts.createChart(document.getElementById("chart"), {
 	},
 	timeScale: {
 		borderColor: 'rgba(197, 203, 206, 0.8)',
+		timeVisible: true,
+        secondsVisible: false,
 	},
-    timeScale: {
-        timeVisible: true,
-    },
 });
 
 var candleSeries = chart.addCandlestickSeries({
@@ -203,15 +206,3 @@ var candleSeries = chart.addCandlestickSeries({
   wickUpColor: '#87cefa',
 });
 
-candleSeries.setData([
-	{ time: 1636242480, open: 180.34, high: 180.99, low: 178.57, close: 179.85 },
-	{ time: 1636242481, open: 180.82, high: 181.40, low: 177.56, close: 178.75 },
-	{ time: 1636242482, open: 175.77, high: 179.49, low: 175.44, close: 178.53 },
-	{ time: 1636242483, open: 178.58, high: 182.37, low: 176.31, close: 176.97 },
-	{ time: 1636242484, open: 177.52, high: 180.50, low: 176.83, close: 179.07 },
-	{ time: 1636242485, open: 176.88, high: 177.34, low: 170.91, close: 172.23 },
-	{ time: 1636242486, open: 173.74, high: 175.99, low: 170.95, close: 173.20 },
-	{ time: 1636242487, open: 173.16, high: 176.43, low: 172.64, close: 176.24 },
-	{ time: 1636242488, open: 177.98, high: 178.85, low: 175.59, close: 175.88 },
-	{ time: 1636242489, open: 176.84, high: 180.86, low: 175.90, close: 180.46 }
-]);
