@@ -9,6 +9,7 @@ let ethInstrument = lib.getAllInstrument("ETH", false);
 let allInstrument = btcInstrument.concat(ethInstrument);
 lib.showInstruments(allInstrument);
 let instrumentDivs = document.getElementsByClassName("instrument");
+mainInstrument =  getCurrentMainInstrument(initInstrumentName);
 
 for(let i = 0; i < instrumentDivs.length; i++){
     instrumentDivs[i].addEventListener("click", e => {
@@ -96,12 +97,6 @@ function responseHeartbeat(){
 }
 
 function subscribeInstrument(instrumentName){
-	for(let i = 0; i < allInstrument.length; i++){
-		if(allInstrument[i].name == initInstrumentName){
-			mainInstrument = allInstrument[i];
-		}
-	}
-
 	let subscribeReq =
     {
         "jsonrpc": "2.0",
@@ -120,6 +115,35 @@ function subscribeInstrument(instrumentName){
 }
 
 function changeInstrument(instrumentName){
+    if(instrumentName == mainInstrument.name){
+        console.warn("the request of subscribe is same as current subscription");
+        return false;
+    }
+    unsubscribeAll();
+    mainInstrument = getCurrentMainInstrument(instrumentName);
+    mainInstrument.tradeHistory.clearHistory();
+    mainInstrument.orderBook.clearOrderBook();
+    lib.showCurrentHistory(mainInstrument);
+    lib.showCurrentInstrumentName(mainInstrument.name);
+
+    subscribeInstrument(instrumentName);
+}
+
+window.onunload = function () {
+    deribitAPI.close(1000, "window closed");
+}
+
+function getCurrentMainInstrument(instrumentName){
+    let instrument;
+    for(let i = 0; i < allInstrument.length; i++){
+		if(allInstrument[i].name === instrumentName){
+			instrument = allInstrument[i];
+		}
+	}
+    return instrument;
+}
+
+function unsubscribeAll(){
     let unsubscribeReq =
     {
         "jsonrpc": "2.0",
@@ -128,39 +152,8 @@ function changeInstrument(instrumentName){
         "params": {
         }
     };
-
     deribitAPI.send(JSON.stringify(unsubscribeReq));
-    
-    for(let i = 0; i < allInstrument.length; i++){
-		if(allInstrument[i].name === instrumentName){
-			mainInstrument = allInstrument[i];
-		}
-	}
-
-    mainInstrument.tradeHistory.clearHistory();
-    mainInstrument.orderBook.clearOrderBook();
-    lib.showCurrentHistory(mainInstrument);
-
-    let request =
-    {
-        "jsonrpc": "2.0",
-        "id": 425,
-        "method": "public/subscribe",
-        "params": {
-            "channels": [
-                "book." + instrumentName + ".raw",
-                "trades." + instrumentName + ".raw"
-            ]
-        }
-    };
-
-    console.warn("changeInstrument-subscribe new instrument");
-    console.warn(request);
-    deribitAPI.send(JSON.stringify(request));
-}
-
-window.onunload = function () {
-    deribitAPI.close(1000, "window closed");
+    console.warn("send unsubscribe request");
 }
 
 

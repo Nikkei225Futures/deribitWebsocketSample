@@ -456,7 +456,7 @@ export function showCurrentHistory(instrument){
         let tradedPrice = history.tradedPrice;
         let tradedAmount = history.tradedAmount;
         let tradedTime = history.tradedTime;
-        tradedPriceCells[i].innerHTML = fixFloatDigit(tradedPrice, 2, instrument.kind);
+        tradedPriceCells[i].innerHTML = fixFloatDigitByKind(tradedPrice, 2, instrument.kind);
         tradedAmountCells[i].innerHTML = tradedAmount;
         tradedTimeCells[i].innerHTML = tradedTime;
 
@@ -515,23 +515,44 @@ export function orderEvent(instrument, msg){
     let spreadCell = document.getElementById('spread');
 
     for(let i = askPrices.length-1, j = 0; i >= 0; i--, j++){
-        askPrices[j].innerHTML = fixFloatDigit(instrument.orderBook.asks[i].price, 2, instrument.kind);
+        askPrices[j].innerHTML = fixFloatDigitByKind(instrument.orderBook.asks[i].price, 2, instrument.kind);
         askQtys[j].innerHTML = instrument.orderBook.asks[i].qty;
     }
 
     for(let i = 0; i < bidPrices.length; i++){
-        bidPrices[i].innerHTML = fixFloatDigit(instrument.orderBook.bids[i].price, 2, instrument.kind);
+        bidPrices[i].innerHTML = fixFloatDigitByKind(instrument.orderBook.bids[i].price, 2, instrument.kind);
         bidQtys[i].innerHTML = instrument.orderBook.bids[i].qty;    
     }
 
-    spreadCell.innerHTML = instrument.bestAsk - instrument.bestBid;
+    let spread;
+    if(instrument.bestAsk == 0 && instrument.bestBid == 0){
+        spread = "no order";
+    }else if(instrument.bestAsk == 0){
+        spread = "no ask";
+    }else if(instrument.bestBid == 0){
+        spread = "no bid";
+    }else{
+        spread = fixFloatDigit(instrument.bestAsk - instrument.bestBid, 4);
+    }
+
+    spreadCell.innerHTML = spread;
  
 }
 
-function fixFloatDigit(price, digit, kind){
+export function showCurrentInstrumentName(instrumentName){
+    let nameArea = document.getElementById("instrumentNameArea");
+    nameArea.innerHTML = instrumentName;
+}
+
+function fixFloatDigitByKind(price, digit, kind){
     if(kind == "futures"){
         return Number.parseFloat(price).toFixed(digit);
     }else{
         return price;
     }
 }
+
+function fixFloatDigit(price, digit){
+    return Number.parseFloat(price).toFixed(digit);
+}
+
