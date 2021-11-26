@@ -9,10 +9,15 @@
             Close API Connection
         </div>
 
+        <div id = "instruments-wrapper">
+
+        </div>
+        
         <div id = "chart"></div>
+        
         <div id = "side-wrapper">
             <div id = "orderBook-wrapper">
-                <p class = "title">OrderBook</p>
+                <p class = "title" id = "instrumentNameArea">BTC-PERPETUAL</p>
                 <table id = orderBook-table>
                     <tr class = "orderBooks asks"><td class = "askPrice">loading</td><td class = "askQty">loading</td></tr>
                     <tr class = "orderBooks asks"><td class = "askPrice">loading</td><td class = "askQty">loading</td></tr>
@@ -70,6 +75,7 @@
         </div>
 
         <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
-        <script type="text/javascript" src="./js/deribitAPI.js"></script>
+        <script type="module" src="./js/lib.js"></script>
+        <script type="module" src="./js/index.js"></script>
     </body>
 </html>
