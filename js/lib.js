@@ -181,7 +181,7 @@ export class Instrument {
     constructor(historySize) {
         this.orderBook = new OrderBook();
         this.tradeHistory = new HistoryList(historySize);
-        this.chartData = new ChartData(1);  //time resolution in the chart is init by 5
+        this.chartData = new ChartData(30);  //time resolution in the chart
         this.bestAsk = this.orderBook.asks[0].price;
         this.bestBid = this.orderBook.bids[0].price;
         
