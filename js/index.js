@@ -4,7 +4,8 @@ var deribitAPI = new WebSocket('wss://www.deribit.com/ws/api/v2');
 let CURRENCY = "BTC";
 let initInstrumentName = "BTC-PERPETUAL";
 let mainInstrument;
-let allInstrument = lib.getAllInstrument(CURRENCY, false, deribitAPI)
+let allInstrument = lib.getAllInstrument("BTC", false);
+allInstrument += lib.getAllInstrument("ETH", false);
 lib.showInstruments(allInstrument);
 let instrumentDivs = document.getElementsByClassName("instrument");
 
