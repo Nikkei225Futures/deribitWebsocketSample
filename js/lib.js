@@ -286,7 +286,7 @@ export class ChartData{
             let candle ={
                 time: this.ticks[i],
                 open: this.opens[i],
-                high: this.opens[i],
+                high: this.highs[i],
                 low: this.lows[i],
                 close: this.closes[i]
             };
@@ -340,6 +340,7 @@ export function initChart(instrument, msg, candleSeries){
     let closes = msg.result.close;
     let ticks = msg.result.ticks;
 
+    //adjust, milsec -> sec
     for(let i = 0; i < ticks.length; i++){
         ticks[i] = ticks[i]/1000;
     }
