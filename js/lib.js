@@ -181,7 +181,7 @@ export class Instrument {
     constructor(historySize) {
         this.orderBook = new OrderBook();
         this.tradeHistory = new HistoryList(historySize);
-        this.chartData = new ChartData(30);  //time resolution in the chart
+        this.chartData = new ChartData("1D");  //time resolution in the chart
         this.bestAsk = this.orderBook.asks[0].price;
         this.bestBid = this.orderBook.bids[0].price;
         
@@ -293,13 +293,6 @@ export class ChartData{
             candles[i] = candle;
         }
         return candles;
-    }
-
-    updateLatestOHLC = function(open, high, low, close){
-        this.opens[this.opens.length-1] = open;
-        this.highs[this.highs.length-1] = high;
-        this.lows[this.lows.length-1] = low;
-        this.closes[this.closes.length-1] = close;
     }
 
     setNewChartData = function(opens, highs, lows, closes, ticks){
