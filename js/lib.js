@@ -313,6 +313,24 @@ export class ChartData{
         }
     }
 
+    setNewCandle = function(price, tick){
+        this.opens.push(price);
+        this.highs.push(price);
+        this.lows.push(price);
+        this.closes.push(price);
+        this.ticks.push(tick);
+    }
+
+    updateCurrentCandle = function(tradedPrice){
+        let li = this.ticks.length-1;   //last index
+        this.closes[li] = tradedPrice;
+        if(tradedPrice > this.highs[li]){
+            this.highs[li] = tradedPrice;
+        }else if(tradedPrice < this.lows[li]){
+            this.lows[li] = tradedPrice;
+        }
+    }   
+
     showCurrentChart = function(candleSeries){
         let data = this.getTradingViewData();
         candleSeries.setData(data);
@@ -463,6 +481,7 @@ export function tradeEvent(mainInstrument, msg, candleSeries){
     addTradeData(mainInstrument, msg, candleSeries);
 }
 
+/*
 function addTradeData(instrument, msg, candleSeries){
     let lastTrade = msg.params.data[msg.params.data.length-1];
     let tradedPrice = lastTrade.price;
@@ -491,6 +510,34 @@ function addTradeData(instrument, msg, candleSeries){
         }
     }
     instrument.chartData.showCurrentChart(candleSeries);
+}
+*/
+function addTradeData(instrument, msg, candleSeries){
+    let trades = msg.params.data;
+    let tradedTime = trades[0].timestamp;
+    let li = instrument.chartData.ticks.length-1;   //last index
+    let tradedPrices = new Array(trades.length);
+    
+    for(let i = 0; i < trades.length; i++){
+        tradedPrices[i] = trades[i].price;
+    }
+
+    let nextTime;
+    if(instrument.chartData.resolution == "1D"){
+        nextTime = instrument.chartData.ticks[li] + 86400;
+    }else{
+        nextTime = instrument.chartData.ticks[li] + instrument.chartData.resolution*60;
+    }
+
+    if(tradedTime > nextTime*1000){
+        instrument.chartData.setNewCandle(tradedPrices[0], nextTime);
+    }
+
+    for(let i = 0; i < tradedPrices.length; i++){
+        instrument.chartData.updateCurrentCandle(tradedPrices[i]);
+        instrument.chartData.showCurrentChart(candleSeries);
+    }
+
 }
 
 
