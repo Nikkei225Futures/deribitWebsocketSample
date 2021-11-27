@@ -481,43 +481,12 @@ export function tradeEvent(mainInstrument, msg, candleSeries){
     addTradeData(mainInstrument, msg, candleSeries);
 }
 
-/*
-function addTradeData(instrument, msg, candleSeries){
-    let lastTrade = msg.params.data[msg.params.data.length-1];
-    let tradedPrice = lastTrade.price;
-
-    let li = instrument.chartData.ticks.length-1;   //last index
-    let nextTime;
-    if(instrument.chartData.resolution == "1D"){
-        nextTime = instrument.chartData.ticks[li] + 86400;
-    }else{
-        nextTime = instrument.chartData.ticks[li] + instrument.chartData.resolution*60;
-    }
-
-    //if the current time > nextTick time, add candlestick, else update data
-    if(Date.now()/1000 > nextTime){
-        instrument.chartData.opens.push(tradedPrice);
-        instrument.chartData.highs.push(tradedPrice);
-        instrument.chartData.lows.push(tradedPrice);
-        instrument.chartData.closes.push(tradedPrice);
-        instrument.chartData.ticks.push(nextTime);
-    }else{
-        instrument.chartData.closes[li] = tradedPrice;
-        if(tradedPrice > instrument.chartData.highs[li]){
-            instrument.chartData.highs[li] = tradedPrice;
-        }else if(tradedPrice < instrument.chartData.lows[li]){
-            instrument.chartData.lows[li] = tradedPrice;
-        }
-    }
-    instrument.chartData.showCurrentChart(candleSeries);
-}
-*/
 function addTradeData(instrument, msg, candleSeries){
     let trades = msg.params.data;
     let tradedTime = trades[0].timestamp;
     let li = instrument.chartData.ticks.length-1;   //last index
     let tradedPrices = new Array(trades.length);
-    
+
     for(let i = 0; i < trades.length; i++){
         tradedPrices[i] = trades[i].price;
     }
