@@ -5,14 +5,19 @@
         <link rel="stylesheet" href="./css/index.css">
     </head>
     <body>
-        <canvas id = "canvas"></canvas>
-        <div class = "closeButton" onclick="closeConnection()">
+        <div class = "closeButton" onclick="closeConnection()" style="display: none;" >
             Close API Connection
         </div>
 
+        <div id = "instruments-wrapper">
+
+        </div>
+        
+        <div id = "chart"></div>
+        
         <div id = "side-wrapper">
             <div id = "orderBook-wrapper">
-                <p class = "title">OrderBook</p>
+                <p class = "title" id = "instrumentNameArea">BTC-PERPETUAL</p>
                 <table id = orderBook-table>
                     <tr class = "orderBooks asks"><td class = "askPrice">loading</td><td class = "askQty">loading</td></tr>
                     <tr class = "orderBooks asks"><td class = "askPrice">loading</td><td class = "askQty">loading</td></tr>
@@ -65,10 +70,27 @@
                     <tr class = "ltps"><td class = "tradedPrice">loading</td><td class = "tradedAmount">loading</td><td class = "tradedTime">loading</td></tr>
                     <tr class = "ltps"><td class = "tradedPrice">loading</td><td class = "tradedAmount">loading</td><td class = "tradedTime">loading</td></tr>
                     <tr class = "ltps"><td class = "tradedPrice">loading</td><td class = "tradedAmount">loading</td><td class = "tradedTime">loading</td></tr>
+                    <tr class = "ltps"><td class = "tradedPrice">loading</td><td class = "tradedAmount">loading</td><td class = "tradedTime">loading</td></tr>
+                    <tr class = "ltps"><td class = "tradedPrice">loading</td><td class = "tradedAmount">loading</td><td class = "tradedTime">loading</td></tr>
+                    <tr class = "ltps"><td class = "tradedPrice">loading</td><td class = "tradedAmount">loading</td><td class = "tradedTime">loading</td></tr>
+                    <tr class = "ltps"><td class = "tradedPrice">loading</td><td class = "tradedAmount">loading</td><td class = "tradedTime">loading</td></tr>
+                    <tr class = "ltps"><td class = "tradedPrice">loading</td><td class = "tradedAmount">loading</td><td class = "tradedTime">loading</td></tr>
+                    <tr class = "ltps"><td class = "tradedPrice">loading</td><td class = "tradedAmount">loading</td><td class = "tradedTime">loading</td></tr>
+                    <tr class = "ltps"><td class = "tradedPrice">loading</td><td class = "tradedAmount">loading</td><td class = "tradedTime">loading</td></tr>
+                    <tr class = "ltps"><td class = "tradedPrice">loading</td><td class = "tradedAmount">loading</td><td class = "tradedTime">loading</td></tr>
+                    <tr class = "ltps"><td class = "tradedPrice">loading</td><td class = "tradedAmount">loading</td><td class = "tradedTime">loading</td></tr>
+                    <tr class = "ltps"><td class = "tradedPrice">loading</td><td class = "tradedAmount">loading</td><td class = "tradedTime">loading</td></tr>
+                    <tr class = "ltps"><td class = "tradedPrice">loading</td><td class = "tradedAmount">loading</td><td class = "tradedTime">loading</td></tr>
+                    <tr class = "ltps"><td class = "tradedPrice">loading</td><td class = "tradedAmount">loading</td><td class = "tradedTime">loading</td></tr>
+                    <tr class = "ltps"><td class = "tradedPrice">loading</td><td class = "tradedAmount">loading</td><td class = "tradedTime">loading</td></tr>
+                    <tr class = "ltps"><td class = "tradedPrice">loading</td><td class = "tradedAmount">loading</td><td class = "tradedTime">loading</td></tr>
+                    <tr class = "ltps"><td class = "tradedPrice">loading</td><td class = "tradedAmount">loading</td><td class = "tradedTime">loading</td></tr>
                 </table>
             </div>
         </div>
 
-        <script type="text/javascript" src="./js/deribitAPI.js"></script>
+        <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+        <script type="module" src="./js/lib.js"></script>
+        <script type="module" src="./js/index.js"></script>
     </body>
 </html>

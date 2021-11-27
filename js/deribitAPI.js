@@ -235,15 +235,124 @@ class OptionBoard {
     }
 }
 
+class ChartData{
+    //data[0] is oldest, data[data.length-1] is latest
+    constructor(resolution){
+        this.opens = new Array();
+        this.highs = new Array();
+        this.lows = new Array();
+        this.closes = new Array();
+        
+        //represented in timestamp-UNIX epoch, minimum flactation is 1sec
+        this.ticks = new Array();    
+
+        //timeScale of each candle, represented in min, exeption: 1day = "1D"   
+        this.resolution = resolution;
+
+    }
+
+    getTradingViewData = function(){
+        let candles = new Array(this.opens.length);
+        let concatStr = "";
+        for(let i = 0; i < this.opens.length; i++){
+            candles[i] = `{ time: ${this.ticks[i]}, open: ${this.opens[i]}, high: ${this.highs[i]}, low: ${this.lows[i]}, close: ${this.closes[i]} },`;
+            concatStr += candles[i];
+        }
+        return concatStr;
+    }
+
+    updateLatestOHLC = function(open, high, low, close){
+        this.opens[this.opens.length-1] = open;
+        this.highs[this.highs.length-1] = high;
+        this.lows[this.lows.length-1] = low;
+        this.closes[this.closes.length-1] = close;
+    }
+
+    addNextCandle = function(open, high, low, close){
+        this.opens.push(open);
+        this.highs.push(high);
+        this.lows.push(low);
+        this.closes.push(close);
+        
+        let nextTime;
+        if(this.resolution == "1D"){
+            nextTime = this.times[this.times.length-1] + 86400;
+        }else{
+            nextTime = this.times[this.times.length-1] + this.resolution * 60;
+        }
+        
+        this.times.push(nextTime);
+    }
+
+}
+
 /*============================================================================================*/
 /*============================================================================================*/
-/*============================================================================================*/
+/*============================================CHART===========================================*/
 /*============================================================================================*/
 /*============================================================================================*/
 
+let chartArea = document.getElementById("chart");
+
+var chart = LightweightCharts.createChart(document.getElementById("chart"), {
+	width: chartArea.offsetWidth - 2,
+    height: chartArea.offsetHeight - 2,
+	layout: {
+		backgroundColor: '#131722',
+		textColor: 'rgba(255, 255, 255, 0.9)',
+	},
+	grid: {
+		vertLines: {
+			color: 'rgba(197, 203, 206, 0)',
+		},
+		horzLines: {
+			color: 'rgba(197, 203, 206, 0)',
+		},
+	},
+	crosshair: {
+		mode: LightweightCharts.CrosshairMode.Normal,
+	},
+	rightPriceScale: {
+		borderColor: 'rgba(197, 203, 206, 0.8)',
+	},
+	timeScale: {
+		borderColor: 'rgba(197, 203, 206, 0.8)',
+	},
+    timeScale: {
+        timeVisible: true,
+    },
+});
+
+var candleSeries = chart.addCandlestickSeries({
+  upColor: '#87cefa',
+  downColor: '#fa8072',
+  borderDownColor: '#fa8072',
+  borderUpColor: '#87cefa',
+  wickDownColor: '#fa8072',
+  wickUpColor: '#87cefa',
+});
+
+candleSeries.setData([
+	{ time: 1636242480, open: 180.34, high: 180.99, low: 178.57, close: 179.85 },
+	{ time: 1636242481, open: 180.82, high: 181.40, low: 177.56, close: 178.75 },
+	{ time: 1636242482, open: 175.77, high: 179.49, low: 175.44, close: 178.53 },
+	{ time: 1636242483, open: 178.58, high: 182.37, low: 176.31, close: 176.97 },
+	{ time: 1636242484, open: 177.52, high: 180.50, low: 176.83, close: 179.07 },
+	{ time: 1636242485, open: 176.88, high: 177.34, low: 170.91, close: 172.23 },
+	{ time: 1636242486, open: 173.74, high: 175.99, low: 170.95, close: 173.20 },
+	{ time: 1636242487, open: 173.16, high: 176.43, low: 172.64, close: 176.24 },
+	{ time: 1636242488, open: 177.98, high: 178.85, low: 175.59, close: 175.88 },
+	{ time: 1636242489, open: 176.84, high: 180.86, low: 175.90, close: 180.46 }
+]);
+
+/*============================================================================================*/
+/*============================================================================================*/
+/*===========================================API==============================================*/
+/*============================================================================================*/
+/*============================================================================================*/
 
 let instrumentName = "BTC-PERPETUAL";
-var deribitAPI = new WebSocket('wss://www.deribit.com/ws/api/v2');
+//var deribitAPI = new WebSocket('wss://www.deribit.com/ws/api/v2');
 let BTC_PERPETUAL;
 
 deribitAPI.addEventListener('open', function (e) {
@@ -455,43 +564,6 @@ function responseHeartbeat(){
     console.warn('sent response against heartbeat');
 }
 
-/*
-function drawLayout(){
-    //adjust number of rows of ltps
-    let sideWrapperHeight = document.getElementById("side-wrapper").clientHeight;
-    let orderBookHeight = document.getElementById("orderBook-wrapper").clientHeight;
-    orderBookHeight += 20;  //height of "Trade History"
-    let historyHeight = sideWrapperHeight - orderBookHeight;
-    let refStrHeight = document.getElementsByClassName("tradedPrice")[0].clientHeight;
-    let numDisplayRows = historyHeight/refStrHeight;
-    let ltpRow = document.getElementsByClassName("ltps")[0];
-    let parentNode = document.getElementById("history-wrapper");
-    let instanceLtps = document.getElementsByClassName("ltps").length;
-    console.log(ltpRow);
-    console.log('historyHeight = ' + historyHeight);
-    console.log('refStrHeight = ' + refStrHeight);
-    console.log('numDisplayRows = ' + numDisplayRows);
-    console.log('instanceLtps = ' + instanceLtps);
-
-    if(instanceLtps < numDisplayRows-1){
-
-        let wholeTr = document.createElement("tr");
-        wholeTr.setAttribute("class", "ltps");
-        let priceTd = document.createElement("td");
-        priceTd.setAttribute("class", "tradedPrice");
-        let amountTd = document.createElement("td");
-        amountTd.setAttribute("class", "tradedAmount");
-        let timeTd = document.createElement("td");
-        timeTd.setAttribute("class", "tradedTime");
-
-        wholeTr.appendChild(priceTd);
-        wholeTr.appendChild(amountTd);
-        wholeTr.appendChild(timeTd);
-
-        parentNode.appendChild(wholeTr);
-    }
-}*/
-
 function closeConnection() {
     deribitAPI.close(3000, "close button pushed");
 }
@@ -535,3 +607,4 @@ function changeInstrument(name){
     deribitAPI.send(JSON.stringify(request));
     console.warn('sent subscribe request: ' + name);
 }
+
