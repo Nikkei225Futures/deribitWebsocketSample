@@ -28,7 +28,11 @@ deribitAPI.addEventListener("message", function (e) {
 	let msg = JSON.parse(e.data);
 	console.log(msg);
 
-	let channel = msg.params.channel;
+	let channel;
+    if(JSON.stringify(msg).indexOf("channel") != -1){
+        channel = msg.params.channel;
+    }
+    
 	let method = msg.method;
 
 	if(method == "subscription"){
@@ -115,6 +119,7 @@ function subscribeInstrument(instrumentName){
     
     let endTime = Date.now() + 60000;
     let msg = lib.getChartData(instrumentName, 0, endTime, mainInstrument.chartData.resolution);
+    lib.updateChartPrecision(mainInstrument, candleSeries);
     lib.initChart(mainInstrument, msg, candleSeries);
 }
 
@@ -127,6 +132,7 @@ function changeInstrument(instrumentName){
     mainInstrument = getCurrentMainInstrument(instrumentName);
     mainInstrument.tradeHistory.clearHistory();
     mainInstrument.orderBook.clearOrderBook();
+    mainInstrument.chartData.clearData();
     lib.showCurrentHistory(mainInstrument);
     lib.showCurrentInstrumentName(mainInstrument.name);
 

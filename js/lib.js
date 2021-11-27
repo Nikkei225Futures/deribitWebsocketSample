@@ -181,7 +181,7 @@ export class Instrument {
     constructor(historySize) {
         this.orderBook = new OrderBook();
         this.tradeHistory = new HistoryList(historySize);
-        this.chartData = new ChartData("1D");  //time resolution in the chart
+        this.chartData = new ChartData(1);  //time resolution in the chart
         this.bestAsk = this.orderBook.asks[0].price;
         this.bestBid = this.orderBook.bids[0].price;
         
@@ -278,6 +278,14 @@ export class ChartData{
         //timeScale of each candle, represented in min, exeption: 1day = "1D"   
         this.resolution = resolution;
 
+    }
+
+    clearData = function(){        
+        this.opens = new Array();
+        this.highs = new Array();
+        this.lows = new Array();
+        this.closes = new Array();
+        this.ticks = new Array();    
     }
 
     getTradingViewData = function(){
@@ -594,6 +602,23 @@ export function orderEvent(instrument, msg){
 export function showCurrentInstrumentName(instrumentName){
     let nameArea = document.getElementById("instrumentNameArea");
     nameArea.innerHTML = instrumentName;
+}
+
+export function updateChartPrecision(instrument, candleSeries){
+    let minFlac;
+    if(instrument.kind == "futures"){
+        minFlac = 2;
+    }else if(instrument.kind == "options"){
+        minFlac = 4;
+    }
+
+    candleSeries.applyOptions({
+        priceFormat: {
+            type: 'price',
+            precision: minFlac,
+        },
+    });
+
 }
 
 function fixFloatDigitByKind(price, digit, kind){
