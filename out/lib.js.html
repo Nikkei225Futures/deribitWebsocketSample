@@ -1,4 +1,32 @@
-/**
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: lib.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: lib.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
  * @file トレード, 履歴に関するクラス定義とindex.jsの使用するための関数定義
  */
 
@@ -89,7 +117,7 @@ export class HistoryList {
 
         /** @member {Trade[]} - クラスTradeのオブジェクトの配列*/
         this.history = Array(this.size);
-        for (let i = 0; i < this.history.length; i++) {
+        for (let i = 0; i &lt; this.history.length; i++) {
             this.history[i] = new Trade();
         }
     }
@@ -119,7 +147,7 @@ export class HistoryList {
      * @function
      */
     clearHistory = function(){
-        for(let i = 0; i < this.size; i++){
+        for(let i = 0; i &lt; this.size; i++){
             this.history[i].initAllValue();
         }
     }
@@ -164,7 +192,7 @@ export class OrderBook {
         /** @member {Order[]} - askの板(クラスTradeのオブジェクトの配列) */
         this.asks = Array(this.initSize);
         
-        for(let i = 0; i < this.initSize; i++){
+        for(let i = 0; i &lt; this.initSize; i++){
             this.bids[i] = new Order(0, 0);
             this.asks[i] = new Order(0, 0);
         }
@@ -178,12 +206,12 @@ export class OrderBook {
      * @param {number[]} bids - bidの配列, bids[1] = 注文価格, bids[2] = 注文数量
      */
     setSnapshot = function(asks, bids){
-        for(let i = 0; i < this.initSize; i++){
-            if(i < asks.length){
+        for(let i = 0; i &lt; this.initSize; i++){
+            if(i &lt; asks.length){
                 this.asks[i].price = asks[i][1];
                 this.asks[i].qty = asks[i][2];    
             }
-            if(i < bids.length){
+            if(i &lt; bids.length){
                 this.bids[i].price = bids[i][1];
                 this.bids[i].qty = bids[i][2];
             }
@@ -196,7 +224,7 @@ export class OrderBook {
      * @param {number} price - 削除するbidの板の価格
      */
     deleteBid = function(price){
-        for(let i = 0; i < this.bids.length; i++){
+        for(let i = 0; i &lt; this.bids.length; i++){
             if(price == this.bids[i].price){
                 this.bids.splice(i, 1);
             }
@@ -208,7 +236,7 @@ export class OrderBook {
      * @param {number} price - 削除するaskの板の価格
      */
     deleteAsk = function(price){
-        for(let i = 0; i < this.asks.length; i++){
+        for(let i = 0; i &lt; this.asks.length; i++){
             if(price == this.asks[i].price){
                 this.asks.splice(i, 1);
             }
@@ -222,7 +250,7 @@ export class OrderBook {
      * @param {number} qty - 変更後の注文数量
      */
     changeBidQty = function(price, qty){
-        for(let i = 0; i < this.bids.length; i++){
+        for(let i = 0; i &lt; this.bids.length; i++){
             if(price == this.bids[i].price){
                 this.bids[i].qty = qty;
             }
@@ -235,7 +263,7 @@ export class OrderBook {
     * @param {number} qty - 変更後の数量
     */
     changeAskQty = function(price, qty){
-        for(let i = 0; i < this.asks.length; i++){
+        for(let i = 0; i &lt; this.asks.length; i++){
             if(price == this.asks[i].price){
                 this.asks[i].qty = qty;
             }
@@ -249,7 +277,7 @@ export class OrderBook {
      * @param {number} qty - 新しいbidの数量
      */
     insertNewBid = function(price, qty){
-        for(let i = 0; i < this.bids.length; i++){
+        for(let i = 0; i &lt; this.bids.length; i++){
             if(price > this.bids[i].price){
                 let temp = new Order(price, qty);
                 this.bids.splice(i, 0, temp);
@@ -264,8 +292,8 @@ export class OrderBook {
      * @param {number} qty - 新しいaskの数量
      */
     insertNewAsk = function(price, qty){
-        for(let i = 0; i < this.asks.length; i++){
-            if(price < this.asks[i].price){
+        for(let i = 0; i &lt; this.asks.length; i++){
+            if(price &lt; this.asks[i].price){
                 let temp = new Order(price, qty);
                 this.asks.splice(i, 0, temp);
                 break;
@@ -278,11 +306,11 @@ export class OrderBook {
      * @function
      */
     clearOrderBook = function(){
-        for(let i = 0; i < this.bids.length; i++){
+        for(let i = 0; i &lt; this.bids.length; i++){
             this.bids[i].price = 0;
             this.bids[i].qty = 0;
         }        
-        for(let i = 0; i < this.asks.length; i++){
+        for(let i = 0; i &lt; this.asks.length; i++){
             this.asks[i].price = 0;
             this.asks[i].qty = 0;
         }
@@ -361,7 +389,7 @@ export class Instrument {
         /** @member {string} - 銘柄の種類("futures" or "options") */
         this.kind = '';
 
-        /** @member {string} - 銘柄の名前, 形式(先物): (BTC | ETH)-(YYMMMDD | PERPETUAL), e.g. BTC-25MAR22,<br> 形式(オプション): (BTC | ETH)-(YYMMMDD)-(STRIKE)-("C" | "P") e.g. ETH-31DEC21-10000-C*/
+        /** @member {string} - 銘柄の名前, 形式(先物): (BTC | ETH)-(YYMMMDD | PERPETUAL), e.g. BTC-25MAR22,&lt;br> 形式(オプション): (BTC | ETH)-(YYMMMDD)-(STRIKE)-("C" | "P") e.g. ETH-31DEC21-10000-C*/
         this.name = '';
 
         /** @member {number} - 銘柄の取組高 */
@@ -427,10 +455,10 @@ export class Instrument {
     }
 
     /**
-     * 引数で指定された銘柄の名前でフィールドを更新する<br>
+     * 引数で指定された銘柄の名前でフィールドを更新する&lt;br>
      * 更新されるフィールド: this.name, this.kind, this.strike, this.optionType
      * @function
-     * @param {string} name - 引数の形式(先物): (BTC | ETH)-(YYMMMDD | PERPETUAL), e.g. BTC-25MAR22,<br> 引数の形式(オプション): (BTC | ETH)-(YYMMMDD)-(STRIKE)-("C" | "P") e.g. ETH-31DEC21-10000-C
+     * @param {string} name - 引数の形式(先物): (BTC | ETH)-(YYMMMDD | PERPETUAL), e.g. BTC-25MAR22,&lt;br> 引数の形式(オプション): (BTC | ETH)-(YYMMMDD)-(STRIKE)-("C" | "P") e.g. ETH-31DEC21-10000-C
      */
     //this func determine this.name, this.kind, this.strike, this.optionType;
     setName = function (name) {
@@ -509,7 +537,7 @@ export class ChartData{
      */
     getTradingViewData = function(){
         let candles = new Array(this.opens.length);
-        for(let i = 0; i < this.opens.length; i++){
+        for(let i = 0; i &lt; this.opens.length; i++){
             let candle ={
                 time: this.ticks[i],
                 open: this.opens[i],
@@ -533,7 +561,7 @@ export class ChartData{
      * @param {timestamp[]} ticks - 足が始まった時間の配列(秒単位のtimestamp)
      */
     setNewChartData = function(opens, highs, lows, closes, ticks){
-        for(let i = 0; i < opens.length; i++){
+        for(let i = 0; i &lt; opens.length; i++){
             this.opens.push(opens[i]);
             this.highs.push(highs[i]);
             this.lows.push(lows[i]);
@@ -566,7 +594,7 @@ export class ChartData{
         this.closes[li] = tradedPrice;
         if(tradedPrice > this.highs[li]){
             this.highs[li] = tradedPrice;
-        }else if(tradedPrice < this.lows[li]){
+        }else if(tradedPrice &lt; this.lows[li]){
             this.lows[li] = tradedPrice;
         }
     }   
@@ -590,7 +618,7 @@ export class ChartData{
  * @returns {Instrument[]} - クラスInstrumentの配列
  */
 export function getAllInstrument(currency, expired){
-    let response = throwRestApiReq(`https://www.deribit.com/api/v2/public/get_instruments?currency=${currency}&expired=${expired}`, 1500);
+    let response = throwRestApiReq(`https://www.deribit.com/api/v2/public/get_instruments?currency=${currency}&amp;expired=${expired}`, 1500);
     response = JSON.parse(response);
     console.log(response);
     let data = response.result;
@@ -598,7 +626,7 @@ export function getAllInstrument(currency, expired){
     
     let initHistorySize = 3000;
 
-    for(let i = 0; i < data.length; i++){
+    for(let i = 0; i &lt; data.length; i++){
         allInstruments[i] = new Instrument(initHistorySize);
         allInstruments[i].setName(data[i].instrument_name);
         allInstruments[i].mininumTick = data[i].tick_size;
@@ -625,7 +653,7 @@ export function initChart(instrument, msg, candleSeries){
     let ticks = msg.result.ticks;
 
     //adjust, milsec -> sec
-    for(let i = 0; i < ticks.length; i++){
+    for(let i = 0; i &lt; ticks.length; i++){
         ticks[i] = ticks[i]/1000;
     }
 
@@ -643,7 +671,7 @@ export function initChart(instrument, msg, candleSeries){
  * @returns {object} - JSON形式のデータ, 過去チャートのデータ
  */
 export function getChartData(instrumentName, start, end, resolution){
-    let response = throwRestApiReq(`https://www.deribit.com/api/v2/public/get_tradingview_chart_data?end_timestamp=${end}&instrument_name=${instrumentName}&resolution=${resolution}&start_timestamp=${start}`, 0);
+    let response = throwRestApiReq(`https://www.deribit.com/api/v2/public/get_tradingview_chart_data?end_timestamp=${end}&amp;instrument_name=${instrumentName}&amp;resolution=${resolution}&amp;start_timestamp=${start}`, 0);
     response = JSON.parse(response);
     console.warn(response);
     return response;
@@ -679,7 +707,7 @@ export function throwRestApiReq(uri, waitMilSec){
  */
 export function busySleep(milSec){
     const start = new Date();
-    while(new Date() - start < milSec);
+    while(new Date() - start &lt; milSec);
 }
 
 /**
@@ -691,7 +719,7 @@ export function showInstruments(allInstrument){
     let instrumentsFutures = Array();
     let instrumentsOptions = Array();
     
-    for(let i = 0; i < allInstrument.length; i++){
+    for(let i = 0; i &lt; allInstrument.length; i++){
         if(allInstrument[i].kind == "options"){
             console.log(allInstrument[i]);
             instrumentsOptions.push(allInstrument[i]);
@@ -704,7 +732,7 @@ export function showInstruments(allInstrument){
     let instrumentsArea = document.getElementById("instruments-wrapper");
     let futuresDivs = Array(instrumentsFutures.length);
 
-    for(let i = 0; i < instrumentsFutures.length; i++){
+    for(let i = 0; i &lt; instrumentsFutures.length; i++){
         futuresDivs[i] = document.createElement("div");
         futuresDivs[i].id = instrumentsFutures[i].name;
         futuresDivs[i].setAttribute("class", "instrument");
@@ -712,7 +740,7 @@ export function showInstruments(allInstrument){
         //futuresDivs[i].setAttribute("onclick", `lib.changeInstrument("${instrumentsFutures[i].name}")`);
 
         let optionsDivs = Array();
-        for(let j = 0; j < instrumentsOptions.length; j++){
+        for(let j = 0; j &lt; instrumentsOptions.length; j++){
             if(instrumentsOptions[j].name.indexOf(futuresDivs[i].id) != -1){
                 optionsDivs.push("");
                 optionsDivs[optionsDivs.length-1] = document.createElement("div");
@@ -724,7 +752,7 @@ export function showInstruments(allInstrument){
         }
 
         let strikes = Array(optionsDivs.length);
-        for(let j = 0; j < optionsDivs.length; j++){
+        for(let j = 0; j &lt; optionsDivs.length; j++){
             let splitedName = optionsDivs[j].id.split("-");
             strikes[j] = Number(splitedName[2]);
         }
@@ -734,7 +762,7 @@ export function showInstruments(allInstrument){
         let swapCounter = 0;
         do{
             swapCounter = 0;
-            for(let j = 0; j < optionsDivs.length-1; j++){
+            for(let j = 0; j &lt; optionsDivs.length-1; j++){
                 if(strikes[j] > strikes[j+1]){
                     let tmp = strikes[j];
                     strikes[j] = strikes[j+1];
@@ -748,13 +776,13 @@ export function showInstruments(allInstrument){
         }while(swapCounter != 0);
         console.timeEnd();
 
-        for(let j = 0; j < optionsDivs.length; j++){
+        for(let j = 0; j &lt; optionsDivs.length; j++){
             futuresDivs[i].appendChild(optionsDivs[j]);
         }
         
 
     }
-    for(let i = 0; i < instrumentsFutures.length; i++){
+    for(let i = 0; i &lt; instrumentsFutures.length; i++){
         instrumentsArea.appendChild(futuresDivs[i]);
     }
 }
@@ -784,7 +812,7 @@ function addTradeData(instrument, msg, candleSeries){
     let li = instrument.chartData.ticks.length-1;   //last index
     let tradedPrices = new Array(trades.length);
 
-    for(let i = 0; i < trades.length; i++){
+    for(let i = 0; i &lt; trades.length; i++){
         tradedPrices[i] = trades[i].price;
     }
 
@@ -799,7 +827,7 @@ function addTradeData(instrument, msg, candleSeries){
         instrument.chartData.setNewCandle(tradedPrices[0], nextTime);
     }
 
-    for(let i = 0; i < tradedPrices.length; i++){
+    for(let i = 0; i &lt; tradedPrices.length; i++){
         instrument.chartData.updateCurrentCandle(tradedPrices[i]);
         instrument.chartData.showCurrentChart(candleSeries);
     }
@@ -814,7 +842,7 @@ function addTradeData(instrument, msg, candleSeries){
  */
 function addHistory(instrument, msg) {
     let data = msg.params.data;
-    for (let i = 0; i < data.length; i++) {
+    for (let i = 0; i &lt; data.length; i++) {
         let price = data[i].price;
         let amount = data[i].amount;
         let timeStamp = data[i].timestamp;
@@ -834,7 +862,7 @@ export function showCurrentHistory(instrument){
     let tradedAmountCells = document.getElementsByClassName("tradedAmount");
     let tradedTimeCells = document.getElementsByClassName("tradedTime");
     let parentNodes = document.getElementsByClassName("ltps");
-    for(let i = 0; i < tradedPriceCells.length; i++){
+    for(let i = 0; i &lt; tradedPriceCells.length; i++){
         let history = instrument.tradeHistory.history[i];
         let tradedPrice = history.tradedPrice;
         let tradedAmount = history.tradedAmount;
@@ -868,7 +896,7 @@ export function orderEvent(instrument, msg){
     if(type == 'snapshot'){
         instrument.orderBook.setSnapshot(asks, bids);
     }else if(type == 'change'){
-        for(let i = 0; i < bids.length; i++){
+        for(let i = 0; i &lt; bids.length; i++){
             let orderType = bids[i][0];
             let price = bids[i][1];
             let qty = bids[i][2];
@@ -881,7 +909,7 @@ export function orderEvent(instrument, msg){
             }
         }
     
-        for(let i = 0; i < asks.length; i++){
+        for(let i = 0; i &lt; asks.length; i++){
             let orderType = asks[i][0];
             let price = asks[i][1];
             let qty = asks[i][2];
@@ -908,13 +936,13 @@ export function orderEvent(instrument, msg){
         askQtys[j].innerHTML = instrument.orderBook.asks[i].qty;
     }
 
-    for(let i = 0; i < bidPrices.length; i++){
+    for(let i = 0; i &lt; bidPrices.length; i++){
         bidPrices[i].innerHTML = fixFloatDigitByKind(instrument.orderBook.bids[i].price, 2, instrument.kind);
         bidQtys[i].innerHTML = instrument.orderBook.bids[i].qty;    
     }
 
     let spread;
-    if(instrument.bestAsk == 0 && instrument.bestBid == 0){
+    if(instrument.bestAsk == 0 &amp;&amp; instrument.bestBid == 0){
         spread = "no order";
     }else if(instrument.bestAsk == 0){
         spread = "no ask";
@@ -987,3 +1015,26 @@ function fixFloatDigitByKind(price, digit, kind){
 function fixFloatDigit(price, digit){
     return Number.parseFloat(price).toFixed(digit);
 }
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ChartData.html">ChartData</a></li><li><a href="Greeks.html">Greeks</a></li><li><a href="HistoryList.html">HistoryList</a></li><li><a href="Instrument.html">Instrument</a></li><li><a href="Order.html">Order</a></li><li><a href="OrderBook.html">OrderBook</a></li><li><a href="Trade.html">Trade</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addHistory">addHistory</a></li><li><a href="global.html#addTradeData">addTradeData</a></li><li><a href="global.html#busySleep">busySleep</a></li><li><a href="global.html#fixFloatDigit">fixFloatDigit</a></li><li><a href="global.html#fixFloatDigitByKind">fixFloatDigitByKind</a></li><li><a href="global.html#getAllInstrument">getAllInstrument</a></li><li><a href="global.html#getChartData">getChartData</a></li><li><a href="global.html#initChart">initChart</a></li><li><a href="global.html#orderEvent">orderEvent</a></li><li><a href="global.html#showCurrentHistory">showCurrentHistory</a></li><li><a href="global.html#showCurrentInstrumentName">showCurrentInstrumentName</a></li><li><a href="global.html#showInstruments">showInstruments</a></li><li><a href="global.html#throwRestApiReq">throwRestApiReq</a></li><li><a href="global.html#tradeEvent">tradeEvent</a></li><li><a href="global.html#updateChartPrecision">updateChartPrecision</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Tue Nov 30 2021 03:52:41 GMT+0900 (Japan Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
