@@ -1,7 +1,6 @@
 import * as lib from './lib.js';
 
 var deribitAPI = new WebSocket('wss://www.deribit.com/ws/api/v2');
-let CURRENCY = "BTC";
 let initInstrumentName = "BTC-PERPETUAL";
 let mainInstrument;
 let btcInstrument = lib.getAllInstrument("BTC", false);
@@ -14,10 +13,25 @@ mainInstrument =  getCurrentMainInstrument(initInstrumentName);
 //click event on instrument list
 for(let i = 0; i < instrumentDivs.length; i++){
     instrumentDivs[i].addEventListener("click", e => {
-        changeInstrument(instrumentDivs[i].id);
+        changeInstrument(instrumentDivs[i].id, false);
         e.stopPropagation();
     });
 }
+
+//click event on chartResolution-selector
+let resolutionSelectors = document.getElementsByClassName("resolution");
+for(let i = 0; i < resolutionSelectors.length; i++){
+    resolutionSelectors[i].addEventListener("click", e => {
+        changeInstrument(mainInstrument.name, resolutionSelectors[i].id);
+        e.stopPropagation();
+    });
+}
+
+//resize event, resize chart size
+window.addEventListener("resize", () => {
+    chart.resize(chartArea.offsetWidth-2, chartArea.offsetHeight-2);
+}, false);
+
 
 deribitAPI.addEventListener("open", e => {
 	subscribeInstrument(initInstrumentName);
@@ -123,18 +137,27 @@ function subscribeInstrument(instrumentName){
     lib.initChart(mainInstrument, msg, candleSeries);
 }
 
-function changeInstrument(instrumentName){
-    if(instrumentName == mainInstrument.name){
+function changeInstrument(instrumentName, chartResolution){
+    if(instrumentName == mainInstrument.name && chartResolution == false){
         console.warn("the request of subscribe is same as current subscription");
         return false;
     }
     unsubscribeAll();
+    let prevChartResolution = mainInstrument.chartData.resolution;
+
     mainInstrument = getCurrentMainInstrument(instrumentName);
+
+    if(chartResolution != false){
+        mainInstrument.chartData.resolution = chartResolution;
+    }else{
+        mainInstrument.chartData.resolution = prevChartResolution;
+    }
     mainInstrument.tradeHistory.clearHistory();
     mainInstrument.orderBook.clearOrderBook();
     mainInstrument.chartData.clearData();
     lib.showCurrentHistory(mainInstrument);
     lib.showCurrentInstrumentName(mainInstrument.name);
+    lib.changeChartWatermark(mainInstrument.name, mainInstrument.chartData.resolution, chart);
 
     subscribeInstrument(instrumentName);
 }
@@ -201,6 +224,17 @@ var chart = LightweightCharts.createChart(document.getElementById("chart"), {
 		timeVisible: true,
         secondsVisible: false,
 	},
+    localization: {
+        locale: 'ja-JP',
+    },
+    watermark: {
+        color: 'rgba(255, 255, 255, 0.1)',
+        visible: true,
+        text: initInstrumentName + ", 5m",
+        fontSize: 70,
+        horzAlign: 'center',
+        vertAlign: 'center',
+    },
 });
 
 var candleSeries = chart.addCandlestickSeries({

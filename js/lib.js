@@ -349,7 +349,7 @@ export class Instrument {
         this.tradeHistory = new HistoryList(historySize);
 
         /** @member {ChartData} - 銘柄のチャートデータ */
-        this.chartData = new ChartData(1);
+        this.chartData = new ChartData(5);
 
         /** @member {number} - 銘柄の最良ask */
         this.bestAsk = this.orderBook.asks[0].price;
@@ -959,6 +959,30 @@ export function updateChartPrecision(instrument, candleSeries){
         },
     });
 
+}
+
+/**
+ * チャートにウォーターマークを入れる
+ * @param {string} instrumentName - 銘柄名
+ * @param {number} chartResolution - チャートの解像度
+ * @param {object} chart - lightweight-chartのChartオブジェクト
+ */
+export function changeChartWatermark(instrumentName, chartResolution, chart){
+    let shownResolution;
+    if(chartResolution == "1D"){
+        shownResolution = chartResolution;
+    }else if(chartResolution >= 60){
+        shownResolution = chartResolution / 60;
+        shownResolution += "h";
+    }else if(chartResolution < 60){
+        shownResolution = chartResolution + "m";
+    }
+
+    chart.applyOptions({
+        watermark: {
+            text: `${instrumentName}, ${shownResolution}`,
+        }
+    });
 }
 
 /**
