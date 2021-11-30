@@ -945,17 +945,21 @@ export function showCurrentInstrumentName(instrumentName){
  * @param {object} candleSeries - lightweight-chartのオブジェクト
  */
 export function updateChartPrecision(instrument, candleSeries){
+    let precision;
     let minFlac;
     if(instrument.kind == "futures"){
-        minFlac = 2;
+        precision = 2;
+        minFlac = 0.05
     }else if(instrument.kind == "options"){
-        minFlac = 4;
+        precision = 4;
+        minFlac = 0.0005
     }
 
     candleSeries.applyOptions({
         priceFormat: {
             type: 'price',
-            precision: minFlac,
+            precision: precision,
+            minMove: minFlac,
         },
     });
 
