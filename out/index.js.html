@@ -1,4 +1,32 @@
-/**
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: index.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: index.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
  * @file index javascript file
  */
 import * as lib from './lib.js';
@@ -14,7 +42,7 @@ let instrumentDivs = document.getElementsByClassName("instrument");
 mainInstrument =  getCurrentMainInstrument(initInstrumentName);
 
 //click event on instrument list
-for(let i = 0; i < instrumentDivs.length; i++){
+for(let i = 0; i &lt; instrumentDivs.length; i++){
     instrumentDivs[i].addEventListener("click", e => {
         changeInstrument(instrumentDivs[i].id, false);
         e.stopPropagation();
@@ -23,7 +51,7 @@ for(let i = 0; i < instrumentDivs.length; i++){
 
 //click event on chartResolution-selector
 let resolutionSelectors = document.getElementsByClassName("resolution");
-for(let i = 0; i < resolutionSelectors.length; i++){
+for(let i = 0; i &lt; resolutionSelectors.length; i++){
     resolutionSelectors[i].addEventListener("click", e => {
         changeInstrument(mainInstrument.name, resolutionSelectors[i].id);
         e.stopPropagation();
@@ -173,11 +201,11 @@ function subscribeInstrument(instrumentName){
  * change instrument to subscribe
  * @funciton
  * @param {string} instrumentName - name of instrument 
- * @param {int | string} chartResolution - resolution of chart, <br>1,3,5,10,15,30,60(1H),120(2H),180(3H),360(6H),720(12H),"1D" is allowed
+ * @param {int | string} chartResolution - resolution of chart, &lt;br>1,3,5,10,15,30,60(1H),120(2H),180(3H),360(6H),720(12H),"1D" is allowed
  * @returns {boolean} - if request of subscription is same as current subscription, return false
  */
 function changeInstrument(instrumentName, chartResolution){
-    if(instrumentName == mainInstrument.name && chartResolution == false){
+    if(instrumentName == mainInstrument.name &amp;&amp; chartResolution == false){
         console.warn("the request of subscribe is same as current subscription");
         return false;
     }
@@ -217,7 +245,7 @@ window.onunload = function () {
  */
 function getCurrentMainInstrument(instrumentName){
     let instrument;
-    for(let i = 0; i < allInstrument.length; i++){
+    for(let i = 0; i &lt; allInstrument.length; i++){
 		if(allInstrument[i].name === instrumentName){
 			instrument = allInstrument[i];
 		}
@@ -299,3 +327,26 @@ var candleSeries = chart.addCandlestickSeries({
   wickUpColor: '#87cefa',
 });
 
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ChartData.html">ChartData</a></li><li><a href="Greeks.html">Greeks</a></li><li><a href="HistoryList.html">HistoryList</a></li><li><a href="Instrument.html">Instrument</a></li><li><a href="Order.html">Order</a></li><li><a href="OrderBook.html">OrderBook</a></li><li><a href="Trade.html">Trade</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addHistory">addHistory</a></li><li><a href="global.html#addTradeData">addTradeData</a></li><li><a href="global.html#busySleep">busySleep</a></li><li><a href="global.html#changeChartWatermark">changeChartWatermark</a></li><li><a href="global.html#changeInstrument">changeInstrument</a></li><li><a href="global.html#fixFloatDigit">fixFloatDigit</a></li><li><a href="global.html#fixFloatDigitByKind">fixFloatDigitByKind</a></li><li><a href="global.html#getAllInstrument">getAllInstrument</a></li><li><a href="global.html#getChartData">getChartData</a></li><li><a href="global.html#getCurrentMainInstrument">getCurrentMainInstrument</a></li><li><a href="global.html#initChart">initChart</a></li><li><a href="global.html#orderEvent">orderEvent</a></li><li><a href="global.html#requestHeartBeat">requestHeartBeat</a></li><li><a href="global.html#responseHeartbeat">responseHeartbeat</a></li><li><a href="global.html#showCurrentHistory">showCurrentHistory</a></li><li><a href="global.html#showCurrentInstrumentName">showCurrentInstrumentName</a></li><li><a href="global.html#showInstruments">showInstruments</a></li><li><a href="global.html#subscribeInstrument">subscribeInstrument</a></li><li><a href="global.html#throwRestApiReq">throwRestApiReq</a></li><li><a href="global.html#tradeEvent">tradeEvent</a></li><li><a href="global.html#unsubscribeAll">unsubscribeAll</a></li><li><a href="global.html#updateChartPrecision">updateChartPrecision</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Fri Dec 03 2021 03:30:44 GMT+0900 (Japan Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
