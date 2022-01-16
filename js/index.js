@@ -154,8 +154,8 @@ function subscribeInstrument(instrumentName){
         "method": "public/subscribe",
         "params": {
             "channels": [
-                "book." + instrumentName + ".raw",
-                "trades." + instrumentName + ".raw"
+                "book." + instrumentName + ".100ms",
+                "trades." + instrumentName + ".100ms"
             ]
         }
 	};
